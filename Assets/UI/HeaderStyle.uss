@@ -1,15 +1,19 @@
 .header_main {
     font-size: 50px;
-    color: rgba(210, 210, 210, 255);
+    color: rgb(210, 210, 210);
 }
 
 .btn-main {
     flex-grow: 1;
     height: 52px;
     font-size: 24px;
-    background-color: rgba(226, 137, 45, 255);
+    background-color: rgb(226, 137, 45);
     border-left-color: rgb(226, 137, 45);
     border-right-color: rgb(226, 137, 45);
     border-top-color: rgb(226, 137, 45);
     border-bottom-color: rgb(226, 137, 45);
+}
+
+.has-background {
+    background-color: rgba(29, 29, 29, 255);
 }
