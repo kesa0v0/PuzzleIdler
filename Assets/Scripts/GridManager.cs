@@ -29,6 +29,8 @@ public class GridManager : MonoBehaviour
     {
         CreateGridVisual();
         LoadGrid();
+
+        GetSample();
     }
 
     public float cellSize;
@@ -39,6 +41,29 @@ public class GridManager : MonoBehaviour
     public Dimensions gridSize;
 
     
+    public void GetSample()
+    {
+        // sample item
+        var itemVisual = Instantiate(gridVisualPrefab);
+        var item = new StoredItem()
+        {
+            Details = new ItemDefinition()
+            {
+                ID = "1",
+                itemName = "test",
+                description = "test",
+                icon = Resources.Load<Sprite>("Sprites/Items/Item_1"),
+                dimensions = new Dimensions()
+                {
+                    width = 1,
+                    height = 1
+                }
+            },
+            RootVisual = itemVisual.GetComponent<ItemVisual>()
+        };
+        AddItemToGrid(item.RootVisual, new Vector2Int(0, 0));
+    }
+
     #region UI elements
     // TODO: UI 관련은 따로 분리
     private VisualElement m_Root;
@@ -88,8 +113,9 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    private async Task<bool> GetPositionForItem(StoredItem newItem)
+    private async Task<bool> GetPositionForItem(GameObject newItemObj)
     {
+        var newItem = newItemObj.GetComponent<StoredItem>();
         for (int y = 0; y < gridSize.height; y++)
         {
             for (int x = 0; x < gridSize.width; x++)
@@ -129,23 +155,33 @@ public class GridManager : MonoBehaviour
         {
             ItemVisual itemVisual = new ItemVisual(loadedItem.Details);
 
-            AddItemToGrid(inventoryItemVisual);
-            bool inventoryHasSpace = await GetPositionForItem(inventoryItemVisual);
-            if (!inventoryHasSpace)
+            AddItemToGrid(itemVisual, new Vector2(storedItems.Count % gridSize.width, storedItems.Count / gridSize.width));
+            bool gridHasSpace = await GetPositionForItem(itemVisual.gameObject);
+            if (!gridHasSpace)
             {
                 Debug.Log("No space - Cannot pick up the item");
-                RemoveItemFromGrid(inventoryItemVisual);
+                RemoveItemFromGrid(itemVisual);
                 continue;
             }
-            ConfigureItem(loadedItem, inventoryItemVisual);
+            ConfigureItem(loadedItem, itemVisual);
         }
     }
-    private void AddItemToGrid(VisualElement item) => m_InventoryGrid.Add(item);
-    private void RemoveItemFromGrid(VisualElement item) => m_InventoryGrid.Remove(item);
+    private void AddItemToGrid(ItemVisual item, Vector2 location)
+    {
+        item.transform.SetParent(transform);
+        item.SetPosition(location);
+        item.gameObject.SetActive(true);
+    }
+    private void RemoveItemFromGrid(ItemVisual item)
+    {
+        item.transform.SetParent(null);
+        item.gameObject.SetActive(false);
+    }
+
     private static void ConfigureItem(StoredItem item, ItemVisual visual)
     {
         item.RootVisual = visual;
-        visual.style.visibility = Visibility.Visible;
+        visual.gameObject.SetActive(true);
     }
 
 
