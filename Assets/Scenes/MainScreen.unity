@@ -156,8 +156,9 @@ MonoBehaviour:
   ItemCellObjPrefab: {fileID: 1130464918233928827, guid: a16c61fba1ab7854494ccb10db15e81b, type: 3}
   GridObjPrefab: {fileID: 3804162876199059362, guid: fc01e7234ffd2764db0a1dbadc5047c2, type: 3}
   GridParentObj: {fileID: 721310880}
-  grid: []
+  gridPos: []
   storedItems: []
+  indicatorCellPrefab: {fileID: 2835696131168717426, guid: 5fdf89e83e4e744449d74d67eee7f0f5, type: 3}
   IndicatorObj: {fileID: 0}
 --- !u!4 &53934034
 Transform:

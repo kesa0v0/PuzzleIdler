@@ -69,9 +69,6 @@ public sealed class GridManager : MonoBehaviour
 
     public List<ItemObj> storedItems = new List<ItemObj>();
 
-    [Space]
-
-    [SerializeField] GameObject IndicatorObj;
 
     
     public void GetSample()
@@ -213,11 +210,63 @@ public sealed class GridManager : MonoBehaviour
 
     }
 
-    public void IndicatorOn(ItemObj itemVisual, Position gridPosition)
-    {
-        throw new NotImplementedException();
-    }
+    #region Indicator
+    public GameObject indicatorCellPrefab;
+    public GameObject IndicatorObj;
     
+    public void IndicateOn(ItemObj itemVisual)
+    {
+        if (IndicatorObj == null)
+        {
+            IndicatorObj = new GameObject();
+        }
+        IndicatorObj.SetActive(true);
+        
+        // copy shape of item
+        foreach (var cell in itemVisual.cells)
+        {
+            var indicatorCell = Instantiate(indicatorCellPrefab, IndicatorObj.transform);
+            indicatorCell.transform.localPosition = new Vector3(cell.relPosOfItem.x, cell.relPosOfItem.y, 0);
+        }
+    }
+
+    public void Indicate(ItemObj itemObj)
+    {
+        // check if item is in grid else not show indicator
+        
+
+        // set indicator's position
+        IndicatorObj.transform.SetParent(GridParentObj.transform);
+        var gridPos = GetGridRelativePosition(itemObj.transform.position);
+        IndicatorObj.transform.localPosition = new Vector3(gridPos.x, gridPos.y, 0);
+
+        // set indicator's color
+        var indicatorCells = IndicatorObj.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var cell in indicatorCells)
+        {
+            // check if valid position
+            //TODO: cell 별로 확인하기
+            if (IsPositionAvailable(itemObj, GetGridRelativePosition(IndicatorObj.transform.position)))
+            {
+                // set color to green, a = 50%
+                cell.color = new Color(0, 1, 0, 0.5f);
+            }
+            else
+            {
+                // set color to red, a = 50%
+                cell.color = new Color(1, 0, 0, 0.5f);
+            }
+        }
+
+    }
+
+    public void IndicateOff()
+    {
+        Destroy(IndicatorObj);
+        IndicatorObj = new GameObject();
+    }
+    #endregion
+
     public static void UpdateItemDetails(ItemDefinition item)
     {
         ui_ItemDetailHeader.text = item.itemName;

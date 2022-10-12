@@ -62,6 +62,9 @@ public class ItemObj : MonoBehaviour
     {
         originalPosition = transform.position;
         rel_Mouse_CenterObj_Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+
+        GridManager.Instance.IndicateOn(this);
+    
         isDragging = true;
     }
 
@@ -71,6 +74,8 @@ public class ItemObj : MonoBehaviour
         {
             return;
         }
+
+        GridManager.Instance.IndicateOff();
 
         // if Dragging : if Drop possible : Drop, if not : Return to original position
         isDragging = false;
@@ -90,9 +95,12 @@ public class ItemObj : MonoBehaviour
 
     // Drag this object
     public void OnMouseDrag() {
+        // 원래는 드래그 했을 때 오브젝트가 제일 뒤로 날라가는게 버그인데 오히려 더 잘보여서 그냥 냅둠
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = -1;
         transform.position = mousePosition - rel_Mouse_CenterObj_Pos;
+
+        GridManager.Instance.Indicate(this);
     }
 
     #endregion
