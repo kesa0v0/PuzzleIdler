@@ -31,22 +31,32 @@ public sealed class GridManager : MonoBehaviour
         UpdateGrid();
     }
 
+
+    [Header("Prefabs")]
+    [SerializeField] GameObject sampleItemPrefab;
+    public GameObject gridVisualPrefab;
+
+
+    [Header("Grid Settings")]
     public GameObject Grid;
 
     public float cellSize;
     public Vector3 originPosition;
-    public GameObject gridVisualPrefab;
     public GameObject[,] gridArray;
     public List<StoredItem> storedItems = new List<StoredItem>();
     public Dimensions gridSize;
 
-    [SerializeField] GameObject sampleItemPrefab;
+    [Space]
+
+    [SerializeField] GameObject telegraph;
 
     
     public void GetSample()
     {
         // sample item
-        var itemVisual = Instantiate(sampleItemPrefab);
+        var itemVisual = Instantiate(sampleItemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        itemVisual.transform.SetParent(Grid.transform);
+
         itemVisual.name = "Sample Item" + storedItems.Count;
         var itemDef = new ItemDefinition()
         {
@@ -71,26 +81,25 @@ public sealed class GridManager : MonoBehaviour
         UpdateGrid();
     }
 
+
     #region UI elements
     // TODO: UI 관련은 따로 분리
-    private VisualElement m_Root;
-    private static Label m_ItemDetailHeader;
-    private static Label m_ItemDetailBody;
-    private static Label m_ItemDetailPrice;
-    private bool m_IsGridReady;
+    private VisualElement ui_Root;
+    private static Label ui_ItemDetailHeader;
+    private static Label ui_ItemDetailBody;
+    private bool IsUIReady;
 
 
     private async void Configure()
     {
-        m_Root = GetComponentInChildren<UIDocument>().rootVisualElement;
-        VisualElement itemDetails = m_Root.Q<VisualElement>("ItemDetails");
-        m_ItemDetailHeader = itemDetails.Q<Label>("Header");
-        m_ItemDetailBody = itemDetails.Q<Label>("Body");
-        m_ItemDetailPrice = itemDetails.Q<Label>("SellPrice");
+        ui_Root = GetComponentInChildren<UIDocument>().rootVisualElement;
+        VisualElement itemDetails = ui_Root.Q<VisualElement>("ItemDetails");
+        ui_ItemDetailHeader = itemDetails.Q<Label>("Header");
+        ui_ItemDetailBody = itemDetails.Q<Label>("Body");
 
         await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
         
-        m_IsGridReady = true;
+        IsUIReady = true;
     }
 
     #endregion
@@ -157,12 +166,12 @@ public sealed class GridManager : MonoBehaviour
 
     private static void SetItemPosition(StoredItem element, Vector2 vector)
     {
-        element.RootVisual.SetPosition(vector);
+        element.RootVisual.transform.localPosition = vector;
     }
 
     private async void UpdateGrid()
     {
-        await UniTask.WaitUntil(() => m_IsGridReady);
+        await UniTask.WaitUntil(() => IsUIReady);
         //TODO: 이거 차곡차곡 정리되는거 필요없엉
         foreach (StoredItem loadedItem in storedItems)
         {
@@ -197,6 +206,23 @@ public sealed class GridManager : MonoBehaviour
     }
 
 
+    private void ConfigureGridTelegraph()
+    {
+
+    }
+
+    public static void UpdateItemDetails(ItemDefinition item)
+    {
+        ui_ItemDetailHeader.text = item.itemName;
+        ui_ItemDetailBody.text = item.description;
+    }
+
+    public Vector2Int GetGridPosition(Vector3 position)
+    {
+        throw new NotImplementedException();
+    }
+
+    
     // public void AddItemToGrid(ItemDefinition itemDefinition, Vector2Int gridPosition)
     // {
     //     ItemVisual newItemVisual = new ItemVisual(itemDefinition);
