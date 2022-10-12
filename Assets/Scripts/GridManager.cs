@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 
+// 용어정리:
+// Grid : 배경
+// Item : 전체 퍼즐 조각
+// ItemCell, Cell : 퍼즐 조각 한칸
+// Indicator : 어디 놓을지 보여주는거
+
 public sealed class GridManager : MonoBehaviour
 {
     // singletone
@@ -27,64 +33,76 @@ public sealed class GridManager : MonoBehaviour
 
     private void Start()
     {
+        TestMethods();
         CreateGridVisual();
-        UpdateGrid();
+    }
+
+
+    private void TestMethods()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            for (int j = 0; j < 5; j++)
+            {
+                gridPos.Add(new Position(i, j));
+            }
+        }
+
+        gridPos.Add(new Position(-1, -1));
+        gridPos.Add(new Position(0, -1));
+        gridPos.Add(new Position(-1,0));
     }
 
 
     [Header("Prefabs")]
-    [SerializeField] GameObject sampleItemPrefab;
-    public GameObject gridVisualPrefab;
+    public GameObject ItemCellObjPrefab;
+    public GameObject GridObjPrefab;
 
 
     [Header("Grid Settings")]
-    public GameObject Grid;
+    // gameobj of parents of all grids
+    public GameObject GridParentObj;
 
-    public float cellSize;
-    public Vector3 originPosition;
-    public GameObject[,] gridArray;
-    public List<StoredItem> storedItems = new List<StoredItem>();
-    public Dimensions gridSize;
+    // TODO: Grid도 Gameobj나 StoredGrid로 관리하기. GridObj에 Position 넣기.
+    public List<Position> gridPos = new List<Position>();
+    public Dictionary<Position, GridObj> grid = new Dictionary<Position, GridObj>();
+
+    public List<ItemObj> storedItems = new List<ItemObj>();
 
     [Space]
 
-    [SerializeField] GameObject telegraph;
+    [SerializeField] GameObject IndicatorObj;
 
     
     public void GetSample()
     {
         // sample item
-        var itemVisual = Instantiate(sampleItemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        itemVisual.transform.SetParent(Grid.transform);
-
-        itemVisual.name = "Sample Item" + storedItems.Count;
         var itemDef = new ItemDefinition()
         {
-            ID = "1",
+            ID = "ItemObj 1",
             itemName = "test",
             description = "test",
-            icon = Resources.Load<Sprite>("Sprites/Items/Item_1"),
-            dimensions = new Dimensions()
+            dimensions = new List<Position>()
             {
-                width = 1,
-                height = 1
+                new Position(0, 0),
+                new Position(0, 1),
+                new Position(1, 0),
             }
         };
-        var item = new StoredItem()
-        {
-            Details = itemDef,
-            RootVisual = itemVisual.GetComponent<ItemVisual>()
-        };
+        
+        var itemObj = new GameObject("ItemObj " + storedItems.Count).AddComponent<ItemObj>();
+        itemObj.Setup(itemDef);
+        itemObj.gameObject.SetActive(true);
 
-        storedItems.Add(item);
-
-        UpdateGrid();
+        storedItems.Add(itemObj);
     }
 
 
     #region UI elements
     // TODO: UI 관련은 따로 분리
     private VisualElement ui_Root;
+
+
     private static Label ui_ItemDetailHeader;
     private static Label ui_ItemDetailBody;
     private bool IsUIReady;
@@ -104,144 +122,108 @@ public sealed class GridManager : MonoBehaviour
 
     #endregion
 
+    // 그리드 제작. GridCell Instantiate
     private void CreateGridVisual()
     {
-        gridArray = new GameObject[gridSize.width, gridSize.height];
-
-        float currentX = originPosition.x;
-        float currentY = originPosition.y;
-
-        for (int x = 0; x < gridSize.width; x++)
+        // Create Grids foreach all grid positions
+        foreach (var pos in gridPos)
         {
-            currentY = originPosition.y;
+            var gridVisual = Instantiate(GridObjPrefab, GridParentObj.transform);
+            gridVisual.transform.localPosition = new Vector3(pos.x, pos.y, 5);
+            gridVisual.name = "Grid " + pos.x + " " + pos.y;
 
-            for (int y = 0; y < gridSize.height; y++)
-            {
-                GameObject newCell = Instantiate(gridVisualPrefab, new Vector3(currentX, currentY, 0), Quaternion.identity);
-                newCell.transform.SetParent(Grid.transform, false);
-
-                gridArray[x, y] = newCell;
-
-                currentY += cellSize;
-            }
-
-            currentX += cellSize;
+            grid.Add(pos, gridVisual.GetComponent<GridObj>());
         }
     }
     
-    // TODO: 이거 어차피 나중에 움직일 수 있게 만들면 안쓸꺼임 대충 만들자
-    private async Task<bool> GetPositionForItem(StoredItem item)
+
+    #region Item Interaction
+    public Position GetGridRelativePosition(Vector3 worldPosition)
     {
-        for (int y = 0; y < gridSize.height; y++)
+        var gridPosition = new Position(
+            Mathf.RoundToInt(worldPosition.x - GridParentObj.transform.position.x), 
+            Mathf.RoundToInt(worldPosition.y - GridParentObj.transform.position.y)
+            );
+        return gridPosition;
+    }
+
+    public bool IsPositionAvailable(ItemObj itemObj, Position gridPosition)
+    {
+        foreach (var cell in itemObj.itemDefinition.dimensions)
         {
-            for (int x = 0; x < gridSize.width; x++)
+            var cellRelGridPos = new Position(gridPosition.x + cell.x, gridPosition.y + cell.y);
+            Debug.Log("Checking Pos of : " + cellRelGridPos.x + " " + cellRelGridPos.y);
+
+            // Check All Cells in Grids
+            if (!grid.Keys.Contains(cellRelGridPos))
             {
-                //try position
-                SetItemPosition(item, new Vector2(x, y));
-                await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
-                StoredItem overlappingItem = storedItems.FirstOrDefault(s => 
-                    s.RootVisual != null && 
-                    checkOverlapping(item.RootVisual, s.RootVisual));
-                //Nothing is here! Place the item.
-                if (overlappingItem == null)
-                {
-                    return true;
-                }
+                Debug.Log("Out of Grid");
+                return false;
             }
+
+            // check if wanted grid is already occupied
+            if (grid[cellRelGridPos].occupiedCell != null && !itemObj.cells.Any(x => x.occupyingGridPos == cellRelGridPos))
+            {
+                Debug.Log("Grid is already occupied");
+                return false;
+            }
+            
         }
-        return false;
+
+        return true;
     }
 
-    private bool checkOverlapping(ItemVisual rootVisual1, ItemVisual rootVisual2)
+    public void AddItemToGrid(ItemObj itemObj, Position gridPosition)
     {
-        if (rootVisual1 == null || rootVisual2 == null)
-            return false;
-        if (rootVisual1 == rootVisual2)
-            return false;
+        // Move Item to Grid
+        itemObj.transform.SetParent(GridParentObj.transform);
+        itemObj.transform.localPosition = new Vector3(gridPosition.x, gridPosition.y, 0);
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(rootVisual1.transform.position, Vector3.forward, Mathf.Infinity);
-        var ishit = hits.Any(h => h == rootVisual2.gameObject);
-        return hits.Any(h => h.collider.gameObject == rootVisual2.gameObject);
-    }
-
-    private static void SetItemPosition(StoredItem element, Vector2 vector)
-    {
-        element.RootVisual.transform.localPosition = vector;
-    }
-
-    private async void UpdateGrid()
-    {
-        await UniTask.WaitUntil(() => IsUIReady);
-        //TODO: 이거 차곡차곡 정리되는거 필요없엉
-        foreach (StoredItem loadedItem in storedItems)
+        // updates item's cells' relative position of grid
+        foreach (var cell in itemObj.cells)
         {
-            Debug.Log("Loading item: " + loadedItem.RootVisual.name);
-            ItemVisual itemVisual = loadedItem.RootVisual;
-
-            // AddItemToGrid(itemVisual, new Vector2(storedItems.Count % gridSize.width, storedItems.Count / gridSize.width));
-            bool gridHasSpace = await GetPositionForItem(loadedItem);
-            if (!gridHasSpace)
-            {
-                continue;
-            }
-            ConfigureItem(loadedItem, itemVisual);
+            cell.occupyingGridPos = new Position(gridPosition.x + cell.relPosOfItem.x, gridPosition.y + cell.relPosOfItem.y);
+            Debug.Log("Add Cell Pos: " + cell.occupyingGridPos.x + " " + cell.occupyingGridPos.y);
+            grid[cell.occupyingGridPos].occupiedCell = cell;
         }
+
+        storedItems.Add(itemObj);
     }
-    private void AddItemToGrid(ItemVisual item, Vector2 location)
+
+    public void RemoveItemFromGrid(ItemObj itemVisual)
     {
-        item.transform.SetParent(Grid.transform);
-        item.SetPosition(location);
-        item.gameObject.SetActive(true);
+        // check if item is in grid
+        if (!storedItems.Contains(itemVisual))
+        {
+            Debug.Log("Item is not in grid");
+            return;
+        }
+
+        // remove item from grid
+        storedItems.Remove(itemVisual);
+        
+        // remove item's cells from grid
+        foreach (var cell in itemVisual.cells)
+        {
+            grid[cell.occupyingGridPos].occupiedCell = null;
+        }
+
+        // move item to outside of grid
+        itemVisual.transform.SetParent(null);
+
     }
-    private void RemoveItemFromGrid(ItemVisual item)
+
+    public void IndicatorOn(ItemObj itemVisual, Position gridPosition)
     {
-        item.transform.SetParent(null);
-        item.gameObject.SetActive(false);
+        throw new NotImplementedException();
     }
-
-    private static void ConfigureItem(StoredItem item, ItemVisual visual)
-    {
-        item.RootVisual = visual;
-        visual.gameObject.SetActive(true);
-    }
-
-
-    private void ConfigureGridTelegraph()
-    {
-
-    }
-
+    
     public static void UpdateItemDetails(ItemDefinition item)
     {
         ui_ItemDetailHeader.text = item.itemName;
         ui_ItemDetailBody.text = item.description;
     }
 
-    public Vector2Int GetGridPosition(Vector3 position)
-    {
-        throw new NotImplementedException();
-    }
+    #endregion
 
-    
-    // public void AddItemToGrid(ItemDefinition itemDefinition, Vector2Int gridPosition)
-    // {
-    //     ItemVisual newItemVisual = new ItemVisual(itemDefinition);
-    //     newItemVisual.SetPosition(gridArray[gridPosition.x, gridPosition.y].transform.position);
-
-    //     StoredItem newItem = new StoredItem();
-    //     newItem.Details = itemDefinition;
-    //     newItem.RootVisual = newItemVisual;
-
-    //     storedItems.Add(newItem);
-    // }
-
-    // public void RemoveItemFromGrid(ItemDefinition itemDefinition)
-    // {
-    //     StoredItem itemToRemove = storedItems.Find(x => x.Details.ID == itemDefinition.ID);
-
-    //     if (itemToRemove != null)
-    //     {
-    //         storedItems.Remove(itemToRemove);
-    //     }
-    // }
 }

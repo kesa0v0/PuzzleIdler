@@ -8,24 +8,40 @@ public struct ItemDefinition
     public string ID;
     public string itemName;
     public string description;
-
-    // TODO: current: just rectangle, future: sets of sprites
-
-    public Sprite icon;
-    public Dimensions dimensions;
+    public List<Position> dimensions;
 }
 
 [Serializable]
-public struct Dimensions
+public struct Position
 {
-    public int width;
-    public int height;
-}
+    public Position(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+    public int x;
+    public int y;
+    public static bool operator ==(Position a, Position b)
+    {
+        return a.x == b.x && a.y == b.y;
+    }
+    public static bool operator !=(Position a, Position b)
+    {
+        return !(a == b);
+    }
 
+    public override bool Equals(object obj)
+    {
+        return base.Equals(obj);
+    }
 
-[Serializable]
-public class StoredItem
-{
-    public ItemDefinition Details;
-    public ItemVisual RootVisual;
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return base.ToString();
+    }
 }

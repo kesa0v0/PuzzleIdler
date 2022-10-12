@@ -153,15 +153,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 138c36524513b14468c1df593f0daa5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Grid: {fileID: 721310880}
-  cellSize: 1
-  originPosition: {x: 0, y: 0, z: 0}
-  gridVisualPrefab: {fileID: 3804162876199059362, guid: fc01e7234ffd2764db0a1dbadc5047c2, type: 3}
+  ItemCellObjPrefab: {fileID: 1130464918233928827, guid: a16c61fba1ab7854494ccb10db15e81b, type: 3}
+  GridObjPrefab: {fileID: 3804162876199059362, guid: fc01e7234ffd2764db0a1dbadc5047c2, type: 3}
+  GridParentObj: {fileID: 721310880}
+  grid: []
   storedItems: []
-  gridSize:
-    width: 3
-    height: 3
-  sampleItemPrefab: {fileID: 1130464918233928827, guid: a16c61fba1ab7854494ccb10db15e81b, type: 3}
+  IndicatorObj: {fileID: 0}
 --- !u!4 &53934034
 Transform:
   m_ObjectHideFlags: 0

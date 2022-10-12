@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3804162876199059364}
   - component: {fileID: 3804162876199059365}
+  - component: {fileID: -1979074566660907656}
   m_Layer: 0
   m_Name: GridBox
   m_TagString: Untagged
@@ -84,3 +85,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-1979074566660907656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3804162876199059362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a249598ecf2b9c4c8d6b1e3b1d39793, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
