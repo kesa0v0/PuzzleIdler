@@ -7,7 +7,7 @@ public class ItemVisual : MonoBehaviour
     public ItemDefinition itemDefinition;
 
 
-    public ItemVisual(ItemDefinition itemDefinition)
+    public void Setup(ItemDefinition itemDefinition)
     {
         this.itemDefinition = itemDefinition;
 

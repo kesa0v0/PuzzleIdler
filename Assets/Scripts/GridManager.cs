@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 
-public class GridManager : MonoBehaviour
+public sealed class GridManager : MonoBehaviour
 {
     // singletone
     public static GridManager Instance;
@@ -28,10 +28,10 @@ public class GridManager : MonoBehaviour
     private void Start()
     {
         CreateGridVisual();
-        LoadGrid();
-
-        GetSample();
+        UpdateGrid();
     }
+
+    public GameObject Grid;
 
     public float cellSize;
     public Vector3 originPosition;
@@ -40,28 +40,35 @@ public class GridManager : MonoBehaviour
     public List<StoredItem> storedItems = new List<StoredItem>();
     public Dimensions gridSize;
 
+    [SerializeField] GameObject sampleItemPrefab;
+
     
     public void GetSample()
     {
         // sample item
-        var itemVisual = Instantiate(gridVisualPrefab);
+        var itemVisual = Instantiate(sampleItemPrefab);
+        itemVisual.name = "Sample Item" + storedItems.Count;
+        var itemDef = new ItemDefinition()
+        {
+            ID = "1",
+            itemName = "test",
+            description = "test",
+            icon = Resources.Load<Sprite>("Sprites/Items/Item_1"),
+            dimensions = new Dimensions()
+            {
+                width = 1,
+                height = 1
+            }
+        };
         var item = new StoredItem()
         {
-            Details = new ItemDefinition()
-            {
-                ID = "1",
-                itemName = "test",
-                description = "test",
-                icon = Resources.Load<Sprite>("Sprites/Items/Item_1"),
-                dimensions = new Dimensions()
-                {
-                    width = 1,
-                    height = 1
-                }
-            },
+            Details = itemDef,
             RootVisual = itemVisual.GetComponent<ItemVisual>()
         };
-        AddItemToGrid(item.RootVisual, new Vector2Int(0, 0));
+
+        storedItems.Add(item);
+
+        UpdateGrid();
     }
 
     #region UI elements
@@ -81,7 +88,7 @@ public class GridManager : MonoBehaviour
         m_ItemDetailBody = itemDetails.Q<Label>("Body");
         m_ItemDetailPrice = itemDetails.Q<Label>("SellPrice");
 
-        await UniTask.WaitForEndOfFrame(this);
+        await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
         
         m_IsGridReady = true;
     }
@@ -101,8 +108,8 @@ public class GridManager : MonoBehaviour
 
             for (int y = 0; y < gridSize.height; y++)
             {
-                GameObject newCell = Instantiate(gridVisualPrefab, new Vector3(currentX, currentY), Quaternion.identity);
-                newCell.transform.SetParent(transform);
+                GameObject newCell = Instantiate(gridVisualPrefab, new Vector3(currentX, currentY, 0), Quaternion.identity);
+                newCell.transform.SetParent(Grid.transform, false);
 
                 gridArray[x, y] = newCell;
 
@@ -112,22 +119,20 @@ public class GridManager : MonoBehaviour
             currentX += cellSize;
         }
     }
-
-    private async Task<bool> GetPositionForItem(GameObject newItemObj)
+    
+    // TODO: 이거 어차피 나중에 움직일 수 있게 만들면 안쓸꺼임 대충 만들자
+    private async Task<bool> GetPositionForItem(StoredItem item)
     {
-        var newItem = newItemObj.GetComponent<StoredItem>();
         for (int y = 0; y < gridSize.height; y++)
         {
             for (int x = 0; x < gridSize.width; x++)
             {
                 //try position
-                SetItemPosition(newItem, new Vector2(newItem.RootVisual.itemDefinition.dimensions.width * x, 
-                    newItem.RootVisual.itemDefinition.dimensions.width * y));
-                await UniTask.WaitForEndOfFrame(this);
-                // TODO: Make checkOverlaps method
+                SetItemPosition(item, new Vector2(x, y));
+                await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
                 StoredItem overlappingItem = storedItems.FirstOrDefault(s => 
                     s.RootVisual != null && 
-                    checkOverlapping(s.RootVisual, newItem.RootVisual));
+                    checkOverlapping(item.RootVisual, s.RootVisual));
                 //Nothing is here! Place the item.
                 if (overlappingItem == null)
                 {
@@ -140,7 +145,14 @@ public class GridManager : MonoBehaviour
 
     private bool checkOverlapping(ItemVisual rootVisual1, ItemVisual rootVisual2)
     {
-        throw new NotImplementedException();
+        if (rootVisual1 == null || rootVisual2 == null)
+            return false;
+        if (rootVisual1 == rootVisual2)
+            return false;
+
+        RaycastHit2D[] hits = Physics2D.RaycastAll(rootVisual1.transform.position, Vector3.forward, Mathf.Infinity);
+        var ishit = hits.Any(h => h == rootVisual2.gameObject);
+        return hits.Any(h => h.collider.gameObject == rootVisual2.gameObject);
     }
 
     private static void SetItemPosition(StoredItem element, Vector2 vector)
@@ -148,19 +160,19 @@ public class GridManager : MonoBehaviour
         element.RootVisual.SetPosition(vector);
     }
 
-    private async void LoadGrid()
+    private async void UpdateGrid()
     {
         await UniTask.WaitUntil(() => m_IsGridReady);
+        //TODO: 이거 차곡차곡 정리되는거 필요없엉
         foreach (StoredItem loadedItem in storedItems)
         {
-            ItemVisual itemVisual = new ItemVisual(loadedItem.Details);
+            Debug.Log("Loading item: " + loadedItem.RootVisual.name);
+            ItemVisual itemVisual = loadedItem.RootVisual;
 
-            AddItemToGrid(itemVisual, new Vector2(storedItems.Count % gridSize.width, storedItems.Count / gridSize.width));
-            bool gridHasSpace = await GetPositionForItem(itemVisual.gameObject);
+            // AddItemToGrid(itemVisual, new Vector2(storedItems.Count % gridSize.width, storedItems.Count / gridSize.width));
+            bool gridHasSpace = await GetPositionForItem(loadedItem);
             if (!gridHasSpace)
             {
-                Debug.Log("No space - Cannot pick up the item");
-                RemoveItemFromGrid(itemVisual);
                 continue;
             }
             ConfigureItem(loadedItem, itemVisual);
@@ -168,7 +180,7 @@ public class GridManager : MonoBehaviour
     }
     private void AddItemToGrid(ItemVisual item, Vector2 location)
     {
-        item.transform.SetParent(transform);
+        item.transform.SetParent(Grid.transform);
         item.SetPosition(location);
         item.gameObject.SetActive(true);
     }
