@@ -63,7 +63,7 @@ public sealed class GridManager : MonoBehaviour
     // gameobj of parents of all grids
     public GameObject GridParentObj;
 
-    // TODO: Grid도 Gameobj나 StoredGrid로 관리하기. GridObj에 Position 넣기.
+    // gridPos: for saving
     public List<Position> gridPos = new List<Position>();
     public Dictionary<Position, GridObj> grid = new Dictionary<Position, GridObj>();
 
@@ -96,7 +96,6 @@ public sealed class GridManager : MonoBehaviour
 
 
     #region UI elements
-    // TODO: UI 관련은 따로 분리
     private VisualElement ui_Root;
 
 

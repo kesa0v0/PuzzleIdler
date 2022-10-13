@@ -33,7 +33,6 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement style="flex-grow: 1; background-color: rgba(56, 56, 56, 0);" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
