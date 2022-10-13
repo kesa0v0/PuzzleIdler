@@ -15,5 +15,14 @@
 }
 
 .has-background {
-    background-color: rgba(29, 29, 29, 255);
+    background-color: rgb(29, 29, 29);
+}
+
+.main-color {
+}
+
+.sub-color {
+}
+
+.background-color {
 }
