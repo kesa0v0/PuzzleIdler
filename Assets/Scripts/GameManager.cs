@@ -26,42 +26,35 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public int preferedFPS = 60;
-
 
     //TODO: 커스텀 자료형
     public float currentPoint = 0;
     public float maxPoint = 1000;
     public float incPointPerSec = 1;
+    public float averagePointPer5Minutes = 0;
     public int currentLevel = 1;
 
-    // Start UpdateCalcPoint()
-    private void Start()
-    {
-        UpdateCalcPoint();
-    }
     
     private void Update() {
+        UpdateCalcPoint();
         UpdateUI();
     }
 
-    public async void UpdateCalcPoint()
+    private void UpdateCalcPoint()
     {
-        while (true)
-        {
-            await UniTask.Delay(1000/preferedFPS);
-            currentPoint += CalcPointPerFPS();
-        }
+        currentPoint =  (currentPoint >= maxPoint) ? maxPoint : currentPoint + incPointPerSec * Time.deltaTime;
+        
     }
 
     private float CalcPointPerFPS()
     {
-        return incPointPerSec / preferedFPS;
+        return incPointPerSec / Time.deltaTime;
     }
     
 
     #region UI elements
 
+    public int preferedFPS;
 
     private VisualElement ui_Root;
 

@@ -10,6 +10,8 @@ public struct ItemDefinition
     public string itemName;
     public string description;
     public List<Position> dimensions;
+
+    public float value;
 }
 
 [Serializable]

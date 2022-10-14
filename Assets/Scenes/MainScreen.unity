@@ -806,3 +806,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca10b250da0c2de4fb7935060b39dadd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPoint: 0
+  maxPoint: 1000
+  incPointPerSec: 1
+  currentLevel: 1
+  preferedFPS: 60

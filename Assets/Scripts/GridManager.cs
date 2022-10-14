@@ -29,12 +29,12 @@ public sealed class GridManager : MonoBehaviour
 
     private void Start()
     {
-        TestMethods();
+        TestGridPosGen();
         CreateGridVisual();
     }
 
 
-    private void TestMethods()
+    private void TestGridPosGen()
     {
         for (int i = 0; i < 5; i++)
         {
