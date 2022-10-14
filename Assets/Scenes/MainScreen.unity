@@ -809,5 +809,6 @@ MonoBehaviour:
   currentPoint: 0
   maxPoint: 1000
   incPointPerSec: 1
+  averagePointPer5Minutes: 0
   currentLevel: 1
   preferedFPS: 60
