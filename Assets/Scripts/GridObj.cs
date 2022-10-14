@@ -5,5 +5,5 @@ using UnityEngine;
 public class GridObj : MonoBehaviour
 {
     public Position position;
-    public ItemCellVisual occupiedCell;
+    public ItemCellObj occupiedCell;
 }

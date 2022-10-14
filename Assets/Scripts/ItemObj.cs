@@ -6,7 +6,7 @@ using UnityEngine;
 public class ItemObj : MonoBehaviour
 {
     public ItemDefinition itemDefinition;
-    public List<ItemCellVisual> cells = new List<ItemCellVisual>();
+    public List<ItemCellObj> cells = new List<ItemCellObj>();
 
     public void Setup(ItemDefinition itemDefinition)
     {
@@ -30,9 +30,9 @@ public class ItemObj : MonoBehaviour
         cell.name = "Cell " + itemDefinition.ID + "" + relPos.x + " " + relPos.y;
 
         cell.transform.localPosition = new Vector3(relPos.x, relPos.y, 0);
-        cell.GetComponent<ItemCellVisual>().relPosOfItem = relPos;
+        cell.GetComponent<ItemCellObj>().relPosOfItem = relPos;
         
-        cells.Add(cell.GetComponent<ItemCellVisual>());
+        cells.Add(cell.GetComponent<ItemCellObj>());
 
         return cell;
     }
@@ -58,7 +58,7 @@ public class ItemObj : MonoBehaviour
     private Vector3 rel_Mouse_CenterObj_Pos;
     private bool isDragging = false;
 
-    public void OnMouseDown(ItemCellVisual cell)
+    public void OnMouseDown(ItemCellObj cell)
     {
         originalPosition = transform.position;
         rel_Mouse_CenterObj_Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;

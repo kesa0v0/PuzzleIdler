@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemCellVisual : MonoBehaviour
+public class ItemCellObj : MonoBehaviour
 {
     public Position relPosOfItem;
     public Position occupyingGridPos;

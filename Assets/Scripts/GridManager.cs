@@ -124,14 +124,14 @@ public sealed class GridManager : MonoBehaviour
             // Check All Cells in Grids
             if (!grid.Keys.Contains(cellRelGridPos))
             {
-                Debug.Log("Out of Grid");
+                // Debug.Log("Out of Grid");
                 return false;
             }
 
             // check if wanted grid is already occupied
             if (grid[cellRelGridPos].occupiedCell != null && !itemObj.cells.Any(x => x.occupyingGridPos == cellRelGridPos))
             {
-                Debug.Log("Grid is already occupied");
+                // Debug.Log("Grid is already occupied");
                 return false;
             }
             
