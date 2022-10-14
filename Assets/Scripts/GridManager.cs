@@ -120,7 +120,6 @@ public sealed class GridManager : MonoBehaviour
         foreach (var cell in itemObj.itemDefinition.dimensions)
         {
             var cellRelGridPos = new Position(gridPosition.x + cell.x, gridPosition.y + cell.y);
-            Debug.Log("Checking Pos of : " + cellRelGridPos.x + " " + cellRelGridPos.y);
 
             // Check All Cells in Grids
             if (!grid.Keys.Contains(cellRelGridPos))

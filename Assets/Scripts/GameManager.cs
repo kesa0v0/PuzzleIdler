@@ -101,8 +101,10 @@ public class GameManager : MonoBehaviour
         ui_ICPSLabel.text = incPointPerSec.ToString() + " / sec";
         ui_LevelLabel.text = "Level " + currentLevel.ToString();
 
-        ui_CurrencyBar.style.width = currentPoint / maxPoint * 100;
-        ui_BarPercent.text = (currentPoint / maxPoint * 100).ToString("F2") + "%";
+        // BarPercent
+        float percent = currentPoint / maxPoint * 100;
+        ui_BarPercent.text = percent.ToString("F2") + "%";
+        ui_CurrencyBar.style.width = new StyleLength(Length.Percent(percent));
     }
 
     #endregion
