@@ -4,6 +4,17 @@ using UnityEngine;
 using System;
 
 [Serializable]
+public enum ItemLevel
+{
+    Red,
+    Orange,
+    Yellow,
+    Green,
+    Blue,
+    Purple
+}
+
+[Serializable]
 public struct ItemDefinition
 {
     public string ID;
@@ -11,7 +22,9 @@ public struct ItemDefinition
     public string description;
     public List<Position> dimensions;
 
-    public float value;
+    public float point;
+    public ItemLevel itemLevel;
+
 }
 
 [Serializable]

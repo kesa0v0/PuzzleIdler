@@ -42,8 +42,15 @@ public class GameManager : MonoBehaviour
 
     private void UpdateCalcPoint()
     {
+        var incPoint = 1.0f;
+        GridManager.Instance.storedItems.ForEach(item =>
+        {
+            incPoint += item.itemDefinition.point;
+        });
+
+        incPointPerSec = incPoint;
+
         currentPoint =  (currentPoint >= maxPoint) ? maxPoint : currentPoint + incPointPerSec * Time.deltaTime;
-        
     }
 
     private float CalcPointPerFPS()

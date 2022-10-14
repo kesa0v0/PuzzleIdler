@@ -80,14 +80,13 @@ public sealed class GridManager : MonoBehaviour
                 new Position(0, 0),
                 new Position(0, 1),
                 new Position(1, 0),
-            }
+            },
+            point = 5,
         };
         
-        var itemObj = new GameObject("ItemObj " + storedItems.Count).AddComponent<ItemObj>();
+        var itemObj = new GameObject("ItemObj").AddComponent<ItemObj>();
         itemObj.Setup(itemDef);
         itemObj.gameObject.SetActive(true);
-
-        storedItems.Add(itemObj);
     }
 
     // 그리드 제작. GridCell Instantiate
