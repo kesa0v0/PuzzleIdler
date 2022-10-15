@@ -98,12 +98,12 @@ public class GameManager : MonoBehaviour
     private void UpdateUI()
     {
         ui_PointLabel.text = currentPoint.ToString("F2") + " / " + maxPoint.ToString();
-        ui_ICPSLabel.text = incPointPerSec.ToString() + " / sec";
+        ui_IPPSLabel.text = incPointPerSec.ToString() + " / sec";
         ui_LevelLabel.text = "Level " + currentLevel.ToString();
 
         // BarPercent
         float percent = currentPoint / maxPoint * 100;
-        ui_BarPercent.text = percent.ToString("F2") + "%";
+        ui_PointBarPercent.text = percent.ToString("F2") + "%";
         ui_PointBar.style.width = new StyleLength(Length.Percent(percent));
     }
 
