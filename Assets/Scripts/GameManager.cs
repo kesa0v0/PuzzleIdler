@@ -65,13 +65,13 @@ public class GameManager : MonoBehaviour
 
     private VisualElement ui_Root;
 
-    private static Label ui_CurrencyLabel;
-    // Increasing Currency per second
-    private static Label ui_ICPSLabel;
+    private static Label ui_PointLabel;
+    // Increasing Point per second
+    private static Label ui_IPPSLabel;
     private static Label ui_LevelLabel;
 
-    private static VisualElement ui_CurrencyBar;
-    private static Label ui_BarPercent;
+    private static VisualElement ui_PointBar;
+    private static Label ui_PointBarPercent;
 
     // private bool IsUIReady;
 
@@ -82,12 +82,12 @@ public class GameManager : MonoBehaviour
 
         // UI
         ui_Root = GetComponentInChildren<UIDocument>().rootVisualElement;
-        ui_CurrencyLabel = ui_Root.Q<Label>("Currency_Value");
-        ui_ICPSLabel = ui_Root.Q<Label>("IncreasingCurrencyPerSecValue");
+        ui_PointLabel = ui_Root.Q<Label>("Point_Value");
+        ui_IPPSLabel = ui_Root.Q<Label>("IncreasingPointPerSecValue");
         ui_LevelLabel = ui_Root.Q<Label>("Level_Value");
 
-        ui_CurrencyBar = ui_Root.Q<VisualElement>("Bar_Inner");
-        ui_BarPercent = ui_Root.Q<Label>("Bar_Percent");
+        ui_PointBar = ui_Root.Q<VisualElement>("Bar_Inner");
+        ui_PointBarPercent = ui_Root.Q<Label>("Bar_Percent");
 
 
         await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
@@ -97,14 +97,14 @@ public class GameManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        ui_CurrencyLabel.text = currentPoint.ToString("F2") + " / " + maxPoint.ToString();
+        ui_PointLabel.text = currentPoint.ToString("F2") + " / " + maxPoint.ToString();
         ui_ICPSLabel.text = incPointPerSec.ToString() + " / sec";
         ui_LevelLabel.text = "Level " + currentLevel.ToString();
 
         // BarPercent
         float percent = currentPoint / maxPoint * 100;
         ui_BarPercent.text = percent.ToString("F2") + "%";
-        ui_CurrencyBar.style.width = new StyleLength(Length.Percent(percent));
+        ui_PointBar.style.width = new StyleLength(Length.Percent(percent));
     }
 
     #endregion
