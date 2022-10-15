@@ -100,6 +100,8 @@ public class ItemObj : MonoBehaviour
         mousePosition.z = -1;
         transform.position = mousePosition - rel_Mouse_CenterObj_Pos;
 
+
+        
         GridManager.Instance.Indicate(this);
     }
 

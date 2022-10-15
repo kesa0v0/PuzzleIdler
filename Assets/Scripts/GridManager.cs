@@ -199,11 +199,8 @@ public sealed class GridManager : MonoBehaviour
         }
     }
 
-    public void Indicate(ItemObj itemObj)
+    public void GridIndicate(ItemObj itemObj)
     {
-        // check if item is in grid else not show indicator
-        
-
         // set indicator's position
         IndicatorObj.transform.SetParent(GridParentObj.transform);
         var gridPos = GetGridRelativePosition(itemObj.transform.position);
@@ -226,13 +223,22 @@ public sealed class GridManager : MonoBehaviour
                 cell.color = new Color(1, 0, 0, 0.5f);
             }
         }
+    }
 
+    public void ItemInventoryIndicate(ItemObj itemObj)
+    {
+
+    }
+
+    public void Indicate(ItemObj itemObj)
+    {
+        GridIndicate(itemObj);
     }
 
     public void IndicateOff()
     {
         Destroy(IndicatorObj);
-        IndicatorObj = new GameObject();
+        IndicatorObj = new GameObject("Indicator");
     }
     #endregion
 
