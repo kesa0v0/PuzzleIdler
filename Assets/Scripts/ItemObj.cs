@@ -63,7 +63,7 @@ public class ItemObj : MonoBehaviour
         originalPosition = transform.position;
         rel_Mouse_CenterObj_Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 
-        GridManager.Instance.IndicateOn(this);
+        GameManager.Instance.indicator.IndicateOn(this);
     
         isDragging = true;
     }
@@ -75,7 +75,7 @@ public class ItemObj : MonoBehaviour
             return;
         }
 
-        GridManager.Instance.IndicateOff();
+        GameManager.Instance.indicator.IndicateOff();
 
         // if Dragging : if Drop possible : Drop, if not : Return to original position
         isDragging = false;
@@ -102,7 +102,7 @@ public class ItemObj : MonoBehaviour
 
 
         
-        GridManager.Instance.Indicate(this);
+        GameManager.Instance.indicator.Indicate(this);
     }
 
     #endregion

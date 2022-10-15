@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 {
     // singletone
     public static GameManager Instance;
+
+    public Indicator indicator;
     
     private void Awake()
     {
