@@ -77,11 +77,24 @@ public class ItemObj : MonoBehaviour
 
         GameManager.Instance.indicator.IndicateOff();
 
-        // if Dragging : if Drop possible : Drop, if not : Return to original position
         isDragging = false;
+
+        // if Dragging : if Drop possible : Drop, if not : Return to original position
+
+        // Check if Item is on Inventory First
+
+        if (Inventory.Instance.IsMouseOnInventory())
+        {
+            Inventory.Instance.AddItemInventory(this);
+            return;
+        }
+
+
+        // Check if Item is on Grid
+
         Position gridPosition = GridManager.Instance.GetGridRelativePosition(transform.position);
 
-        Debug.Log("Grid Position : " + gridPosition.x + " " + gridPosition.y);
+        // Debug.Log("Grid Position : " + gridPosition.x + " " + gridPosition.y);
 
         if (GridManager.Instance.IsPositionAvailable(this, gridPosition))
         {
@@ -90,6 +103,7 @@ public class ItemObj : MonoBehaviour
             return;
         }
 
+        // Return to original position
         transform.position = originalPosition;
     }
 

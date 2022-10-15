@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class Inventory : MonoBehaviour
 {
@@ -20,31 +21,45 @@ public class Inventory : MonoBehaviour
         }
     }
 
-
+    #region UI Control
     [SerializeField] bool isInventoryOpened = true;
+    [SerializeField] GameObject inventoryBtn;
     public void ToggleInventory()
     {
         if (isInventoryOpened)
         {
-            this.transform.DOMoveX(-450, 0.5f);
+            inventoryBtn.transform.DOLocalMoveX(0, 0.5f);
+            this.transform.DOLocalMoveX(-450, 0.5f);
         }
         else
         {
-            this.transform.DOMoveX(0, 0.5f);
+            inventoryBtn.transform.DOLocalMoveX(450, 0.5f);
+            this.transform.DOLocalMoveX(0, 0.5f);
         }
         isInventoryOpened = !isInventoryOpened;
     }
+    #endregion
 
-    public 
+
+    #region Item Control
     public List<ItemObj> storedItems = new List<ItemObj>();
-
-    public void GetInventoryRelativePosition()
+    
+    
+    public bool IsMouseOnInventory()
     {
-
+        return EventSystem.current.IsPointerOverGameObject();
     }
 
-
-    public void AddItemInventory(ItemDefinition itemDefinition)
+    public void AddItemInventory(ItemObj itemObj)
     {
+        storedItems.Add(itemObj);
+        itemObj.transform.SetParent(this.transform);
     }
+
+    public void RemoveItemInventory(ItemObj itemObj)
+    {
+        storedItems.Remove(itemObj);
+    }
+
+    #endregion
 }

@@ -50,7 +50,7 @@ public class CameraManager : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
         var zoom = Camera.main.orthographicSize;
-        zoom -= scroll * 1000 * zoomSpeed * Time.deltaTime;
+        zoom -= scroll * 100 * zoomSpeed * Time.deltaTime;
 
         zoom = Mathf.Clamp(zoom, minZoom, maxZoom);
 
