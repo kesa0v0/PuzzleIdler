@@ -55,12 +55,14 @@ public class ItemObj : MonoBehaviour
     #region MouseControls
     
     private Vector3 originalPosition;
+    private Vector3 originalScale;
     private Vector3 rel_Mouse_CenterObj_Pos;
     private bool isDragging = false;
 
     public void OnMouseDown(ItemCellObj cell)
     {
         originalPosition = transform.position;
+        originalScale = transform.localScale;
         rel_Mouse_CenterObj_Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 
         GameManager.Instance.indicator.IndicateOn(this);
@@ -85,6 +87,10 @@ public class ItemObj : MonoBehaviour
 
         if (Inventory.Instance.IsMouseOnInventory())
         {
+            // if on Inventory : Drop to Inventory
+            Debug.Log("Drop to Inventory");
+            Inventory.Instance.RemoveItemInventory(this);
+            GridManager.Instance.RemoveItemFromGrid(this);
             Inventory.Instance.AddItemInventory(this);
             return;
         }
@@ -98,13 +104,17 @@ public class ItemObj : MonoBehaviour
 
         if (GridManager.Instance.IsPositionAvailable(this, gridPosition))
         {
+            Debug.Log("Drop to Grid");
+            Inventory.Instance.RemoveItemInventory(this);
             GridManager.Instance.RemoveItemFromGrid(this);
             GridManager.Instance.AddItemToGrid(this, gridPosition);
             return;
         }
 
         // Return to original position
+        Debug.Log("Return to original position");
         transform.position = originalPosition;
+        transform.localScale = originalScale;
     }
 
     // Drag this object
@@ -113,8 +123,7 @@ public class ItemObj : MonoBehaviour
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = -1;
         transform.position = mousePosition - rel_Mouse_CenterObj_Pos;
-
-
+        transform.localScale = Vector3.one;
         
         GameManager.Instance.indicator.Indicate(this);
     }

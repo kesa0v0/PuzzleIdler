@@ -66,29 +66,6 @@ public sealed class GridManager : MonoBehaviour
     public List<ItemObj> storedItems = new List<ItemObj>();
 
 
-    
-    public void GetSample()
-    {
-        // sample item
-        var itemDef = new ItemDefinition()
-        {
-            ID = "ItemObj 1",
-            itemName = "test",
-            description = "test",
-            dimensions = new List<Position>()
-            {
-                new Position(0, 0),
-                new Position(0, 1),
-                new Position(1, 0),
-            },
-            point = 5,
-        };
-        
-        var itemObj = new GameObject("ItemObj").AddComponent<ItemObj>();
-        itemObj.Setup(itemDef);
-        itemObj.gameObject.SetActive(true);
-    }
-
     // 그리드 제작. GridCell Instantiate
     private void CreateGridVisual()
     {
@@ -144,6 +121,7 @@ public sealed class GridManager : MonoBehaviour
         // Move Item to Grid
         itemObj.transform.SetParent(GridParentObj.transform);
         itemObj.transform.localPosition = new Vector3(gridPosition.x, gridPosition.y, 0);
+        itemObj.transform.localScale = Vector3.one;
 
         // updates item's cells' relative position of grid
         foreach (var cell in itemObj.cells)

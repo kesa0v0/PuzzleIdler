@@ -46,12 +46,19 @@ public class Indicator : MonoBehaviour
 
     public void ItemInventoryIndicate(ItemObj itemObj)
     {
-
+        
     }
 
     public void Indicate(ItemObj itemObj)
     {
-        GridIndicate(itemObj);
+        if (Inventory.Instance.IsMouseOnInventory())
+        {
+            ItemInventoryIndicate(itemObj);
+        }
+        else
+        {
+            GridIndicate(itemObj);
+        }
     }
 
     public void IndicateOff()

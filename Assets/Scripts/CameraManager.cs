@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+    public Canvas canvas;
     // Camera Panning
     public float panSpeed = 30f;
     public Vector2 panLimit;
@@ -47,7 +48,15 @@ public class CameraManager : MonoBehaviour
         
 
         // Camera Zooming
+        // Scale the camera's orthographic size based on the zoom value
+        // default orthographic size is 5
         float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+
+        if (Inventory.Instance.IsMouseOnInventory())
+        {
+            return;
+        }
 
         var zoom = Camera.main.orthographicSize;
         zoom -= scroll * 100 * zoomSpeed * Time.deltaTime;
@@ -55,6 +64,9 @@ public class CameraManager : MonoBehaviour
         zoom = Mathf.Clamp(zoom, minZoom, maxZoom);
 
         Camera.main.orthographicSize = zoom;
+
+        // Scale Canvas too
+        canvas.transform.localScale = new Vector3(zoom / 5 * 0.00925926f, zoom / 5 * 0.00925926f, 1);
     }
 
 
