@@ -4,6 +4,7 @@ using UnityEngine;
 
 using DG.Tweening;
 using UnityEngine.UI;
+using System;
 
 public class Inventory : MonoBehaviour
 {
@@ -39,6 +40,7 @@ public class Inventory : MonoBehaviour
         };
         
         var itemObj = new GameObject("ItemObj").AddComponent<ItemObj>();
+        var rect = itemObj.gameObject.AddComponent<RectTransform>();
         itemObj.Setup(itemDef);
         itemObj.gameObject.SetActive(true);
 
@@ -52,13 +54,13 @@ public class Inventory : MonoBehaviour
         if (isInventoryOpened)
         {
             // Use DOTween to animate the inventory closing
-            transform.DOLocalMoveX(-450 + transform.localPosition.x, 0.5f);
+            transform.DOLocalMoveX(-400 + transform.localPosition.x, 0.5f);
             isInventoryOpened = false;
         }
         else
         {
             // Use DOTween to animate the inventory opening
-            transform.DOLocalMoveX(450 + transform.localPosition.x, 0.5f);
+            transform.DOLocalMoveX(400 + transform.localPosition.x, 0.5f);
             isInventoryOpened = true;
         }
     }
@@ -67,6 +69,27 @@ public class Inventory : MonoBehaviour
 
     #region Item Control
     public GameObject Content;
+
+    internal void MoveScroll(float scroll)
+    {
+        // Debug.Log(scroll);
+        var inventoryRect = GameObject.Find("ItemInventory").GetComponent<ScrollRect>();
+        // Scroll 
+        // Control scroll range
+        if (inventoryRect.verticalNormalizedPosition + scroll > 1)
+        {
+            inventoryRect.verticalNormalizedPosition = 1;
+        }
+        else if (inventoryRect.verticalNormalizedPosition + scroll < 0)
+        {
+            inventoryRect.verticalNormalizedPosition = 0;
+        }
+        else
+        {
+            inventoryRect.verticalNormalizedPosition += scroll * 1f;
+        }
+    }
+
     public List<ItemObj> storedItems = new List<ItemObj>();
 
     public Vector3 inventoryItemScale;
@@ -82,7 +105,7 @@ public class Inventory : MonoBehaviour
         storedItems.Add(itemObj);
         itemObj.transform.SetParent(Content.transform, false);
         itemObj.transform.localScale = inventoryItemScale * 50;
-        
+        itemObj.transform.localPosition = itemObj.transform.localPosition + new Vector3(0, 0, -1);
     }
 
     public void RemoveItemInventory(ItemObj itemObj)
@@ -92,6 +115,7 @@ public class Inventory : MonoBehaviour
             Debug.Log("Item is not in grid");
             return;
         }
+
         storedItems.Remove(itemObj);
     }
 

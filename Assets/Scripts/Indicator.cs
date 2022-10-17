@@ -46,7 +46,8 @@ public class Indicator : MonoBehaviour
 
     public void ItemInventoryIndicate(ItemObj itemObj)
     {
-        
+        this.transform.SetParent(Inventory.Instance.transform);
+        this.transform.localPosition = new Vector3(0, 0, 0);
     }
 
     public void Indicate(ItemObj itemObj)

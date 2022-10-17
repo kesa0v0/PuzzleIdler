@@ -55,6 +55,7 @@ public class CameraManager : MonoBehaviour
 
         if (Inventory.Instance.IsMouseOnInventory())
         {
+            Inventory.Instance.MoveScroll(scroll);
             return;
         }
 

@@ -54,6 +54,7 @@ public class ItemObj : MonoBehaviour
 
     #region MouseControls
     
+    private GameObject originalParent;
     private Vector3 originalPosition;
     private Vector3 originalScale;
     private Vector3 rel_Mouse_CenterObj_Pos;
@@ -64,6 +65,7 @@ public class ItemObj : MonoBehaviour
         originalPosition = transform.position;
         originalScale = transform.localScale;
         rel_Mouse_CenterObj_Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+        originalParent = transform.parent.gameObject;
 
         GameManager.Instance.indicator.IndicateOn(this);
     
@@ -112,6 +114,7 @@ public class ItemObj : MonoBehaviour
         }
 
         // Return to original position
+        transform.SetParent(originalParent.transform, false);
         Debug.Log("Return to original position");
         transform.position = originalPosition;
         transform.localScale = originalScale;
@@ -120,8 +123,10 @@ public class ItemObj : MonoBehaviour
     // Drag this object
     public void OnMouseDrag() {
         // 원래는 드래그 했을 때 오브젝트가 제일 뒤로 날라가는게 버그인데 오히려 더 잘보여서 그냥 냅둠
+        transform.SetParent(null);
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = -1;
+        mousePosition.z = -10;
+        rel_Mouse_CenterObj_Pos.z = 0;
         transform.position = mousePosition - rel_Mouse_CenterObj_Pos;
         transform.localScale = Vector3.one;
         
