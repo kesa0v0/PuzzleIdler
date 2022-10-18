@@ -38,13 +38,23 @@ public class Inventory : MonoBehaviour
             },
             point = 5,
         };
-        
+
         var itemObj = new GameObject("ItemObj").AddComponent<ItemObj>();
         var rect = itemObj.gameObject.AddComponent<RectTransform>();
         itemObj.Setup(itemDef);
         itemObj.gameObject.SetActive(true);
 
-        AddItemInventory(itemObj);
+        // make some cell randomly blacked
+        itemObj.cells.ForEach(cell =>
+        {
+            if (UnityEngine.Random.Range(0, 3) == 0)
+            {
+                cell.SetColor(Color.black);
+            }
+        });
+
+        // AddItemInventory(itemObj);
+        GenerateItemAtInventory(itemObj);
     }
 
     #region UI Control
@@ -93,19 +103,54 @@ public class Inventory : MonoBehaviour
     public List<ItemObj> storedItems = new List<ItemObj>();
 
     public Vector3 inventoryItemScale;
-    
-    
+
+
     public bool IsMouseOnInventory()
     {
         return RectTransformUtility.RectangleContainsScreenPoint(this.GetComponent<RectTransform>(), Input.mousePosition, Camera.main);
     }
+    
+    public int GetInsertIndexFromMousePosition()
+    {
+        // get index from mouse position
+        var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var localMousePos = Content.transform.InverseTransformPoint(mousePos);
+
+        // Debug.Log(localMousePos);
+        
+        // get index from localMousePos
+        var index = - (Mathf.RoundToInt(localMousePos.y / Content.GetComponent<VerticalLayoutGroup>().spacing));
+
+        // if index is out of range, return max or min count
+        if (index < 0)
+        {
+            index = 0;
+        }
+        else if (index > storedItems.Count)
+        {
+            index = storedItems.Count;
+        }
+
+
+        return index;
+    }
 
     public void AddItemInventory(ItemObj itemObj)
     {
-        storedItems.Add(itemObj);
+        // Get Index from mouseposition y
+        var index = GetInsertIndexFromMousePosition();
+        // Debug.Log(index);
+        storedItems.Insert(index, itemObj);
+        
+        // Add item to list
         itemObj.transform.SetParent(Content.transform, false);
+        // Set item position
+        itemObj.transform.SetSiblingIndex(index);
         itemObj.transform.localScale = inventoryItemScale * 50;
-        itemObj.transform.localPosition = itemObj.transform.localPosition + new Vector3(0, 0, -1);
+        itemObj.transform.localPosition = new Vector3(itemObj.transform.localPosition.x, 
+                                                    itemObj.transform.localPosition.y, 
+                                                    -10);   
+
     }
 
     public void RemoveItemInventory(ItemObj itemObj)
@@ -119,10 +164,23 @@ public class Inventory : MonoBehaviour
         storedItems.Remove(itemObj);
     }
 
+    public void GenerateItemAtInventory(ItemObj itemObj)
+    {
+        storedItems.Add(itemObj);
+        
+        // Add item to list at last
+        itemObj.transform.SetParent(Content.transform, false);
+        itemObj.transform.localScale = inventoryItemScale * 50;
+        itemObj.transform.localPosition = new Vector3(itemObj.transform.localPosition.x, 
+                                                    itemObj.transform.localPosition.y, 
+                                                    -10);  
+    }
+
     public void SortInventory()
     {
         // Sorts
     }
+
 
     #endregion
 }

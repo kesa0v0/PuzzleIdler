@@ -6,12 +6,13 @@ public class Indicator : MonoBehaviour
 {
     public GameObject indicatorCellPrefab;
     
-    public void IndicateOn(ItemObj itemVisual)
+    public void IndicateOn(ItemObj itemObj)
     {
         this.gameObject.SetActive(true);
+        this.transform.position = itemObj.transform.position + new Vector3(0, 0, -1);
         
         // copy shape of item
-        foreach (var cell in itemVisual.cells)
+        foreach (var cell in itemObj.cells)
         {
             var indicatorCell = Instantiate(indicatorCellPrefab, this.transform);
             indicatorCell.transform.localPosition = new Vector3(cell.relPosOfItem.x, cell.relPosOfItem.y, 0);
@@ -24,6 +25,7 @@ public class Indicator : MonoBehaviour
         this.transform.SetParent(GridManager.Instance.GridParentObj.transform);
         var gridPos = GridManager.Instance.GetGridRelativePosition(itemObj.transform.position);
         this.transform.localPosition = new Vector3(gridPos.x, gridPos.y, 0);
+        this.transform.localScale = Vector3.one;
 
         // set indicator's color
         var indicatorCells = this.GetComponentsInChildren<SpriteRenderer>();
@@ -46,8 +48,23 @@ public class Indicator : MonoBehaviour
 
     public void ItemInventoryIndicate(ItemObj itemObj)
     {
-        this.transform.SetParent(Inventory.Instance.transform);
-        this.transform.localPosition = new Vector3(0, 0, 0);
+        // Debug.Log("ItemInventoryIndicate");
+        var index = Inventory.Instance.GetInsertIndexFromMousePosition();
+        
+        // Add item to list
+        this.transform.SetParent(Inventory.Instance.Content.transform);
+        // Set item position
+        this.transform.SetSiblingIndex(index);
+        this.transform.localScale = Inventory.Instance.inventoryItemScale * 50;
+
+
+        var indicatorCells = this.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var cell in indicatorCells)
+        {
+            // make it half transparent
+            // TODO: load its Original Color
+            cell.color = new Color(1, 1, 1, 0.60f);
+        }
     }
 
     public void Indicate(ItemObj itemObj)
@@ -66,6 +83,7 @@ public class Indicator : MonoBehaviour
     {
         this.gameObject.SetActive(false);
         this.transform.SetParent(null);
+        this.transform.position = Vector3.zero;
         foreach (Transform child in this.transform)
         {
             Destroy(child.gameObject);

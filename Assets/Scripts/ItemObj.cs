@@ -90,7 +90,7 @@ public class ItemObj : MonoBehaviour
         if (Inventory.Instance.IsMouseOnInventory())
         {
             // if on Inventory : Drop to Inventory
-            Debug.Log("Drop to Inventory");
+            // Debug.Log("Drop to Inventory");
             Inventory.Instance.RemoveItemInventory(this);
             GridManager.Instance.RemoveItemFromGrid(this);
             Inventory.Instance.AddItemInventory(this);
@@ -106,7 +106,7 @@ public class ItemObj : MonoBehaviour
 
         if (GridManager.Instance.IsPositionAvailable(this, gridPosition))
         {
-            Debug.Log("Drop to Grid");
+            // Debug.Log("Drop to Grid");
             Inventory.Instance.RemoveItemInventory(this);
             GridManager.Instance.RemoveItemFromGrid(this);
             GridManager.Instance.AddItemToGrid(this, gridPosition);
@@ -115,7 +115,7 @@ public class ItemObj : MonoBehaviour
 
         // Return to original position
         transform.SetParent(originalParent.transform, false);
-        Debug.Log("Return to original position");
+        // Debug.Log("Return to original position");
         transform.position = originalPosition;
         transform.localScale = originalScale;
     }
