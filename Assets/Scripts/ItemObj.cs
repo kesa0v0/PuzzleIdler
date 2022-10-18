@@ -54,16 +54,20 @@ public class ItemObj : MonoBehaviour
 
     #region MouseControls
     
+    private GameObject originalParent;
     private Vector3 originalPosition;
+    private Vector3 originalScale;
     private Vector3 rel_Mouse_CenterObj_Pos;
     private bool isDragging = false;
 
     public void OnMouseDown(ItemCellObj cell)
     {
         originalPosition = transform.position;
+        originalScale = transform.localScale;
         rel_Mouse_CenterObj_Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+        originalParent = transform.parent.gameObject;
 
-        GridManager.Instance.IndicateOn(this);
+        GameManager.Instance.indicator.IndicateOn(this);
     
         isDragging = true;
     }
@@ -75,32 +79,58 @@ public class ItemObj : MonoBehaviour
             return;
         }
 
-        GridManager.Instance.IndicateOff();
+        GameManager.Instance.indicator.IndicateOff();
+
+        isDragging = false;
 
         // if Dragging : if Drop possible : Drop, if not : Return to original position
-        isDragging = false;
+
+        // Check if Item is on Inventory First
+
+        if (Inventory.Instance.IsMouseOnInventory())
+        {
+            // if on Inventory : Drop to Inventory
+            // Debug.Log("Drop to Inventory");
+            Inventory.Instance.RemoveItemInventory(this);
+            GridManager.Instance.RemoveItemFromGrid(this);
+            Inventory.Instance.AddItemInventory(this);
+            return;
+        }
+
+
+        // Check if Item is on Grid
+
         Position gridPosition = GridManager.Instance.GetGridRelativePosition(transform.position);
 
-        Debug.Log("Grid Position : " + gridPosition.x + " " + gridPosition.y);
+        // Debug.Log("Grid Position : " + gridPosition.x + " " + gridPosition.y);
 
         if (GridManager.Instance.IsPositionAvailable(this, gridPosition))
         {
+            // Debug.Log("Drop to Grid");
+            Inventory.Instance.RemoveItemInventory(this);
             GridManager.Instance.RemoveItemFromGrid(this);
             GridManager.Instance.AddItemToGrid(this, gridPosition);
             return;
         }
 
+        // Return to original position
+        transform.SetParent(originalParent.transform, false);
+        // Debug.Log("Return to original position");
         transform.position = originalPosition;
+        transform.localScale = originalScale;
     }
 
     // Drag this object
     public void OnMouseDrag() {
         // 원래는 드래그 했을 때 오브젝트가 제일 뒤로 날라가는게 버그인데 오히려 더 잘보여서 그냥 냅둠
+        transform.SetParent(null);
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = -1;
+        mousePosition.z = -10;
+        rel_Mouse_CenterObj_Pos.z = 0;
         transform.position = mousePosition - rel_Mouse_CenterObj_Pos;
-
-        GridManager.Instance.Indicate(this);
+        transform.localScale = Vector3.one;
+        
+        GameManager.Instance.indicator.Indicate(this);
     }
 
     #endregion
