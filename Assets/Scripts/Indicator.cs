@@ -12,10 +12,11 @@ public class Indicator : MonoBehaviour
         this.transform.position = itemObj.transform.position + new Vector3(0, 0, -1);
         
         // copy shape of item
-        foreach (var cell in itemObj.storedCellList)
+        // Value -> Key 이거 문제 될 수 도 잇는데 몰?루
+        foreach (var cell in itemObj.cellSet.Keys)
         {
             var indicatorCell = Instantiate(indicatorCellPrefab, this.transform);
-            indicatorCell.transform.localPosition = new Vector3(cell.relPosOfItem.x, cell.relPosOfItem.y, 0);
+            indicatorCell.transform.localPosition = new Vector3(cell.x, cell.y, 0);
         }
     }
 

@@ -105,8 +105,9 @@ public sealed class GridManager : MonoBehaviour
             }
 
             // check if wanted grid is already occupied
-            if (gridSet[cellRelGridPos].occupiedCell != null && !itemObj.storedCellList.Any(x => x.occupyingGridPos == cellRelGridPos))
+            if (gridSet[cellRelGridPos].occupiedCell != null && !itemObj.cellSet.ContainsKey(gridSet[cellRelGridPos].occupiedCell.relPosOfItem))
             {
+                
                 // Debug.Log("Grid is already occupied");
                 return false;
             }
@@ -124,11 +125,10 @@ public sealed class GridManager : MonoBehaviour
         itemObj.transform.localScale = Vector3.one;
 
         // updates item's cells' relative position of grid
-        foreach (var cell in itemObj.storedCellList)
+        foreach (var cellKey in itemObj.cellSet.Keys)
         {
-            cell.occupyingGridPos = new Position(gridPosition.x + cell.relPosOfItem.x, gridPosition.y + cell.relPosOfItem.y);
-            Debug.Log("Add Cell Pos: " + cell.occupyingGridPos.x + " " + cell.occupyingGridPos.y);
-            gridSet[cell.occupyingGridPos].occupiedCell = cell;
+            itemObj.cellSet[cellKey].occupyingGridPos = gridPosition + cellKey;
+            gridSet[gridPosition + cellKey].occupiedCell = itemObj.cellSet[cellKey];
         }
 
         storedItemList.Add(itemObj);
@@ -147,9 +147,10 @@ public sealed class GridManager : MonoBehaviour
         storedItemList.Remove(itemVisual);
         
         // remove item's cells from grid
-        foreach (var cell in itemVisual.storedCellList)
+        foreach (var cell in itemVisual.cellSet)
         {
-            gridSet[cell.occupyingGridPos].occupiedCell = null;
+            gridSet[cell.Value.occupyingGridPos].occupiedCell = null;
+
         }
 
         // move item to outside of grid

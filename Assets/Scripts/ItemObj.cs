@@ -6,6 +6,7 @@ using UnityEngine;
 public class ItemObj : MonoBehaviour
 {
     public ItemDefinition itemDefinition;
+    // Position (0, 0) based on Item
     public Dictionary<Position, ItemCellObj> cellSet = new Dictionary<Position, ItemCellObj>();
     public List<ItemCellObj> storedCellList = new List<ItemCellObj>();
 
@@ -33,21 +34,21 @@ public class ItemObj : MonoBehaviour
         cell.transform.localPosition = new Vector3(relPos.x, relPos.y, 0);
         cell.GetComponent<ItemCellObj>().relPosOfItem = relPos;
         
-        storedCellList.Add(cell.GetComponent<ItemCellObj>());
+        cellSet.Add(relPos, cell.GetComponent<ItemCellObj>());
 
         return cell;
     }
 
     public void RemoveItemCell(Position relPos)
     {
-        var cell = storedCellList.Find(x => x.relPosOfItem.x == relPos.x && x.relPosOfItem.y == relPos.y);
+        var cell = cellSet[relPos];
         if (cell == null)
         {
             Debug.LogError("Cell not found");
             return;
         }
 
-        storedCellList.Remove(cell);
+        cellSet.Remove(relPos);
         Destroy(cell.gameObject);
 
         itemDefinition.dimensions.Remove(relPos);

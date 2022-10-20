@@ -45,13 +45,13 @@ public class Inventory : MonoBehaviour
         itemObj.gameObject.SetActive(true);
 
         // make some cell randomly blacked
-        itemObj.storedCellList.ForEach(cell =>
+        foreach (var cell in itemObj.cellSet.Values)
         {
             if (UnityEngine.Random.Range(0, 3) == 0)
             {
                 cell.SetColor(Color.black);
             }
-        });
+        }
 
         // AddItemInventory(itemObj);
         GenerateItemAtInventory(itemObj);
