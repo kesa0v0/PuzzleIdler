@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     private void UpdateCalcPoint()
     {
         var incPoint = 1.0f;
-        GridManager.Instance.storedItems.ForEach(item =>
+        GridManager.Instance.storedItemList.ForEach(item =>
         {
             incPoint += item.itemDefinition.point;
         });

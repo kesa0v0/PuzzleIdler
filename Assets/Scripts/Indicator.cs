@@ -12,7 +12,7 @@ public class Indicator : MonoBehaviour
         this.transform.position = itemObj.transform.position + new Vector3(0, 0, -1);
         
         // copy shape of item
-        foreach (var cell in itemObj.cells)
+        foreach (var cell in itemObj.storedCellList)
         {
             var indicatorCell = Instantiate(indicatorCellPrefab, this.transform);
             indicatorCell.transform.localPosition = new Vector3(cell.relPosOfItem.x, cell.relPosOfItem.y, 0);

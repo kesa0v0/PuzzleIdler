@@ -61,9 +61,9 @@ public sealed class GridManager : MonoBehaviour
 
     // gridPos: for saving
     public List<Position> gridPos = new List<Position>();
-    public Dictionary<Position, GridObj> grid = new Dictionary<Position, GridObj>();
+    public Dictionary<Position, GridObj> gridSet = new Dictionary<Position, GridObj>();
 
-    public List<ItemObj> storedItems = new List<ItemObj>();
+    public List<ItemObj> storedItemList = new List<ItemObj>();
 
 
     // 그리드 제작. GridCell Instantiate
@@ -76,7 +76,7 @@ public sealed class GridManager : MonoBehaviour
             gridVisual.transform.localPosition = new Vector3(pos.x, pos.y, 5);
             gridVisual.name = "Grid " + pos.x + " " + pos.y;
 
-            grid.Add(pos, gridVisual.GetComponent<GridObj>());
+            gridSet.Add(pos, gridVisual.GetComponent<GridObj>());
         }
     }
     
@@ -98,14 +98,14 @@ public sealed class GridManager : MonoBehaviour
             var cellRelGridPos = new Position(gridPosition.x + cell.x, gridPosition.y + cell.y);
 
             // Check All Cells in Grids
-            if (!grid.Keys.Contains(cellRelGridPos))
+            if (!gridSet.Keys.Contains(cellRelGridPos))
             {
                 // Debug.Log("Out of Grid");
                 return false;
             }
 
             // check if wanted grid is already occupied
-            if (grid[cellRelGridPos].occupiedCell != null && !itemObj.cells.Any(x => x.occupyingGridPos == cellRelGridPos))
+            if (gridSet[cellRelGridPos].occupiedCell != null && !itemObj.storedCellList.Any(x => x.occupyingGridPos == cellRelGridPos))
             {
                 // Debug.Log("Grid is already occupied");
                 return false;
@@ -124,32 +124,32 @@ public sealed class GridManager : MonoBehaviour
         itemObj.transform.localScale = Vector3.one;
 
         // updates item's cells' relative position of grid
-        foreach (var cell in itemObj.cells)
+        foreach (var cell in itemObj.storedCellList)
         {
             cell.occupyingGridPos = new Position(gridPosition.x + cell.relPosOfItem.x, gridPosition.y + cell.relPosOfItem.y);
             Debug.Log("Add Cell Pos: " + cell.occupyingGridPos.x + " " + cell.occupyingGridPos.y);
-            grid[cell.occupyingGridPos].occupiedCell = cell;
+            gridSet[cell.occupyingGridPos].occupiedCell = cell;
         }
 
-        storedItems.Add(itemObj);
+        storedItemList.Add(itemObj);
     }
 
     public void RemoveItemFromGrid(ItemObj itemVisual)
     {
         // check if item is in grid
-        if (!storedItems.Contains(itemVisual))
+        if (!storedItemList.Contains(itemVisual))
         {
             Debug.Log("Item is not in grid");
             return;
         }
 
         // remove item from grid
-        storedItems.Remove(itemVisual);
+        storedItemList.Remove(itemVisual);
         
         // remove item's cells from grid
-        foreach (var cell in itemVisual.cells)
+        foreach (var cell in itemVisual.storedCellList)
         {
-            grid[cell.occupyingGridPos].occupiedCell = null;
+            gridSet[cell.occupyingGridPos].occupiedCell = null;
         }
 
         // move item to outside of grid
