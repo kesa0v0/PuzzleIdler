@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3804162876199059364}
+  - component: {fileID: 7305603575794121294}
   - component: {fileID: 3804162876199059365}
   - component: {fileID: -1979074566660907656}
   m_Layer: 0
@@ -18,8 +18,8 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3804162876199059364
-Transform:
+--- !u!224 &7305603575794121294
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -33,6 +33,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0.99, y: 0.99666667}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &3804162876199059365
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -74,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 0eb35e5cbcab2884d8359c263eeca189, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b37b94be01b112741ac64f2c868c329f, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -97,3 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a249598ecf2b9c4c8d6b1e3b1d39793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  position:
+    x: 0
+    y: 0
+  occupiedCell: {fileID: 0}

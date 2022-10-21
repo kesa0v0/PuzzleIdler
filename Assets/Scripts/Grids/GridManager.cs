@@ -72,14 +72,17 @@ public sealed class GridManager : MonoBehaviour
         // Create Grids foreach all grid positions
         foreach (var pos in gridPos)
         {
-            var gridVisual = Instantiate(GridObjPrefab, GridParentObj.transform);
-            gridVisual.transform.localPosition = new Vector3(pos.x, pos.y, 5);
-            gridVisual.name = "Grid " + pos.x + " " + pos.y;
-
-            gridSet.Add(pos, gridVisual.GetComponent<GridObj>());
+            CreateGridObj(pos);
         }
     }
-    
+    public void CreateGridObj(Position pos)
+    {
+        var gridObj = Instantiate(GridObjPrefab, GridParentObj.transform);
+        gridObj.transform.localPosition = new Vector3(pos.x, pos.y, 5);
+        gridObj.name = "Grid " + pos.x + " " + pos.y;
+
+        gridSet.Add(pos, gridObj.GetComponent<GridObj>());
+    }    
 
     #region Item Interaction
     public Position GetGridRelativePosition(Vector3 worldPosition)
@@ -160,5 +163,22 @@ public sealed class GridManager : MonoBehaviour
 
 
     #endregion
+
+    [SerializeField] GameObject GridExtensionBoxPrefab;
+
+    public void ExpandGrid()
+    {
+        var expandablePositions = Utils.GetAbleExtPos(gridPos);
+        
+
+        foreach (var pos in expandablePositions)
+        {
+            var gridExtBoxObj = Instantiate(GridExtensionBoxPrefab, GridParentObj.transform);
+            gridExtBoxObj.transform.localPosition = new Vector3(pos.x, pos.y, 5);
+            gridExtBoxObj.name = "GridExtBox " + pos.x + " " + pos.y;
+
+            // var gridExtBox = gridExtBoxObj.GetComponent<GridExtensionBox>();
+        }
+    }
 
 }
