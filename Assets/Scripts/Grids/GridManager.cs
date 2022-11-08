@@ -101,20 +101,21 @@ public sealed class GridManager : MonoBehaviour
     {
         foreach (var cell in itemObj.itemDefinition.dimensions)
         {
-            var cellRelGridPos = new Position(gridPosition.x + cell.x, gridPosition.y + cell.y);
+            var cellRelGridPos = gridPosition + cell;
+            // Debug.Log("cellRelGridPos: " + cellRelGridPos.ToString());
 
             // Check All Cells in Grids
             if (!gridSet.Keys.Contains(cellRelGridPos))
             {
-                Debug.Log("Out of Grid");
+                // Debug.Log("Out of Grid");
                 return false;
             }
 
             // check if wanted grid is already occupied
-            if (gridSet[cellRelGridPos].occupiedCell != null && !itemObj.cellSet.ContainsKey(gridSet[cellRelGridPos].occupiedCell.relPosOfItem))
+            if (gridSet[cellRelGridPos].occupiedCell != null && 
+            gridSet[cellRelGridPos].occupiedCell.transform.parent.gameObject != itemObj.gameObject)
             {
-                
-                Debug.Log("Grid is already occupied");
+                // Debug.Log("Grid is already occupied");
                 return false;
             }
             

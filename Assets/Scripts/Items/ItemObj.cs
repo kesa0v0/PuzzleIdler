@@ -8,7 +8,6 @@ public class ItemObj : MonoBehaviour
     public ItemDefinition itemDefinition;
     // Position (0, 0) based on Item
     public Dictionary<Position, ItemCellObj> cellSet = new Dictionary<Position, ItemCellObj>();
-    public List<ItemCellObj> storedCellList = new List<ItemCellObj>();
 
     public void Setup(ItemDefinition itemDefinition)
     {
