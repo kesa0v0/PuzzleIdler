@@ -54,17 +54,6 @@ public struct Position
 
     public override string ToString()
     {
-        return base.ToString();
+        return "x: " + x + ", y: " + y;
     }
-
-    // log
-    public void Log()
-    {
-        Debug.Log("x: " + x + ", y: " + y);
-    }
-
-    // public Position GetGridRelativePosition(Position basePosition)
-    // {
-    //     return new Position(this.x - basePosition.x, this.y - basePosition.y);
-    // }
 }

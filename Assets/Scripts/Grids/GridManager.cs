@@ -59,7 +59,7 @@ public sealed class GridManager : MonoBehaviour
     // gameobj of parents of all grids
     public GameObject GridParentObj;
 
-    // gridPos: for saving
+    // gridPos: to save where grids are 근데 밑에껄로 대체가능 할 듯
     public List<Position> gridPos = new List<Position>();
     public Dictionary<Position, GridObj> gridSet = new Dictionary<Position, GridObj>();
 
@@ -75,11 +75,14 @@ public sealed class GridManager : MonoBehaviour
             CreateGridObj(pos);
         }
     }
+
     public void CreateGridObj(Position pos)
     {
         var gridObj = Instantiate(GridObjPrefab, GridParentObj.transform);
         gridObj.transform.localPosition = new Vector3(pos.x, pos.y, 5);
         gridObj.name = "Grid " + pos.x + " " + pos.y;
+
+        Debug.Log("Created GridObj: " + pos.ToString());
 
         gridSet.Add(pos, gridObj.GetComponent<GridObj>());
     }    
@@ -166,19 +169,45 @@ public sealed class GridManager : MonoBehaviour
 
     [SerializeField] GameObject GridExtensionBoxPrefab;
 
-    public void ExpandGrid()
+
+    #region  Grid Extension
+
+    private List<GridExtensionBoxObj> gridExtensionBoxObjList = new List<GridExtensionBoxObj>();
+
+    public void VisualizeExtendablePosition()
     {
         var expandablePositions = Utils.GetAbleExtPos(gridPos);
+
+        gridExtensionBoxObjList = new List<GridExtensionBoxObj>();
         
 
         foreach (var pos in expandablePositions)
         {
-            var gridExtBoxObj = Instantiate(GridExtensionBoxPrefab, GridParentObj.transform);
-            gridExtBoxObj.transform.localPosition = new Vector3(pos.x, pos.y, 5);
-            gridExtBoxObj.name = "GridExtBox " + pos.x + " " + pos.y;
+            var gridExtBox = Instantiate(GridExtensionBoxPrefab, GridParentObj.transform).GetComponent<GridExtensionBoxObj>();
+            gridExtBox.Setup(pos);
 
-            // var gridExtBox = gridExtBoxObj.GetComponent<GridExtensionBox>();
+            gridExtensionBoxObjList.Add(gridExtBox);
         }
     }
+
+    public void ExtendGrid(Position pos)
+    {
+        gridPos.Add(pos);
+        CreateGridObj(pos);
+    }
+
+    public void ExtendGrid(GridExtensionBoxObj gridExtBoxObj)
+    {
+        gridPos.Add(gridExtBoxObj.pos);
+        CreateGridObj(gridExtBoxObj.pos);
+
+        // remove all grid extension box
+        foreach (var gridExtBox in gridExtensionBoxObjList)
+        {
+            Destroy(gridExtBox.gameObject);
+        }
+    }
+
+    #endregion
 
 }

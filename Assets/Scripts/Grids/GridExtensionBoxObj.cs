@@ -5,15 +5,22 @@ using UnityEngine;
 public class GridExtensionBoxObj : MonoBehaviour
 {
     public Position pos;
-    public GridExtensionBoxObj(Position pos)
+    private bool isAlreadyClicked = false; // To prevent double click
+
+    public void Setup(Position pos)
     {
         this.pos = pos;
+        this.transform.localPosition = new Vector3(pos.x, pos.y, 5);
+        this.name = "GridExtBox " + pos.x + " " + pos.y;
     }
 
-    public void OnClick()
+    private void OnMouseDown() 
     {
-        Debug.Log("Clicked: " + pos.ToString());
-        GridManager.Instance.CreateGridObj(pos);
-        
+        if (!isAlreadyClicked)
+        {
+            isAlreadyClicked = true;
+            Debug.Log("Clicked: " + pos.ToString());
+            GridManager.Instance.ExtendGrid(this);
+        }
     }
 }
