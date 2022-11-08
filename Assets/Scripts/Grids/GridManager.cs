@@ -59,11 +59,11 @@ public sealed class GridManager : MonoBehaviour
     // gameobj of parents of all grids
     public GameObject GridParentObj;
 
-    // gridPos: for saving
+    // gridPos: to save where grids are 근데 밑에껄로 대체가능 할 듯
     public List<Position> gridPos = new List<Position>();
-    public Dictionary<Position, GridObj> grid = new Dictionary<Position, GridObj>();
+    public Dictionary<Position, GridObj> gridSet = new Dictionary<Position, GridObj>();
 
-    public List<ItemObj> storedItems = new List<ItemObj>();
+    public List<ItemObj> storedItemList = new List<ItemObj>();
 
 
     // 그리드 제작. GridCell Instantiate
@@ -72,14 +72,20 @@ public sealed class GridManager : MonoBehaviour
         // Create Grids foreach all grid positions
         foreach (var pos in gridPos)
         {
-            var gridVisual = Instantiate(GridObjPrefab, GridParentObj.transform);
-            gridVisual.transform.localPosition = new Vector3(pos.x, pos.y, 5);
-            gridVisual.name = "Grid " + pos.x + " " + pos.y;
-
-            grid.Add(pos, gridVisual.GetComponent<GridObj>());
+            CreateGridObj(pos);
         }
     }
-    
+
+    public void CreateGridObj(Position pos)
+    {
+        var gridObj = Instantiate(GridObjPrefab, GridParentObj.transform);
+        gridObj.transform.localPosition = new Vector3(pos.x, pos.y, 5);
+        gridObj.name = "Grid " + pos.x + " " + pos.y;
+
+        Debug.Log("Created GridObj: " + pos.ToString());
+
+        gridSet.Add(pos, gridObj.GetComponent<GridObj>());
+    }    
 
     #region Item Interaction
     public Position GetGridRelativePosition(Vector3 worldPosition)
@@ -95,17 +101,19 @@ public sealed class GridManager : MonoBehaviour
     {
         foreach (var cell in itemObj.itemDefinition.dimensions)
         {
-            var cellRelGridPos = new Position(gridPosition.x + cell.x, gridPosition.y + cell.y);
+            var cellRelGridPos = gridPosition + cell;
+            // Debug.Log("cellRelGridPos: " + cellRelGridPos.ToString());
 
             // Check All Cells in Grids
-            if (!grid.Keys.Contains(cellRelGridPos))
+            if (!gridSet.Keys.Contains(cellRelGridPos))
             {
                 // Debug.Log("Out of Grid");
                 return false;
             }
 
             // check if wanted grid is already occupied
-            if (grid[cellRelGridPos].occupiedCell != null && !itemObj.cells.Any(x => x.occupyingGridPos == cellRelGridPos))
+            if (gridSet[cellRelGridPos].occupiedCell != null && 
+            gridSet[cellRelGridPos].occupiedCell.transform.parent.gameObject != itemObj.gameObject)
             {
                 // Debug.Log("Grid is already occupied");
                 return false;
@@ -124,32 +132,32 @@ public sealed class GridManager : MonoBehaviour
         itemObj.transform.localScale = Vector3.one;
 
         // updates item's cells' relative position of grid
-        foreach (var cell in itemObj.cells)
+        foreach (var cellKey in itemObj.cellSet.Keys)
         {
-            cell.occupyingGridPos = new Position(gridPosition.x + cell.relPosOfItem.x, gridPosition.y + cell.relPosOfItem.y);
-            Debug.Log("Add Cell Pos: " + cell.occupyingGridPos.x + " " + cell.occupyingGridPos.y);
-            grid[cell.occupyingGridPos].occupiedCell = cell;
+            itemObj.cellSet[cellKey].occupyingGridPos = gridPosition + cellKey;
+            gridSet[gridPosition + cellKey].occupiedCell = itemObj.cellSet[cellKey];
         }
 
-        storedItems.Add(itemObj);
+        storedItemList.Add(itemObj);
     }
 
     public void RemoveItemFromGrid(ItemObj itemVisual)
     {
         // check if item is in grid
-        if (!storedItems.Contains(itemVisual))
+        if (!storedItemList.Contains(itemVisual))
         {
-            Debug.Log("Item is not in grid");
+            // Debug.Log("Item is not in grid");
             return;
         }
 
         // remove item from grid
-        storedItems.Remove(itemVisual);
+        storedItemList.Remove(itemVisual);
         
         // remove item's cells from grid
-        foreach (var cell in itemVisual.cells)
+        foreach (var cell in itemVisual.cellSet)
         {
-            grid[cell.occupyingGridPos].occupiedCell = null;
+            gridSet[cell.Value.occupyingGridPos].occupiedCell = null;
+
         }
 
         // move item to outside of grid
@@ -157,6 +165,61 @@ public sealed class GridManager : MonoBehaviour
 
     }
 
+
+    #endregion
+
+    [SerializeField] GameObject GridExpansionBoxPrefab;
+
+
+    #region Grid Expansion
+
+    private List<GridExpansionBoxObj> gridExpansionBoxObjList = new List<GridExpansionBoxObj>();
+    [SerializeField] private bool isGridExpansionMode = false;
+
+    public void VisualizeExpandablePosition()
+    {
+        if (isGridExpansionMode)
+        {
+            return;
+        }
+
+        isGridExpansionMode = true;
+
+        var expandablePositions = Utils.GetAbleExpansionPos(gridPos);
+
+        gridExpansionBoxObjList = new List<GridExpansionBoxObj>();
+        
+
+        foreach (var pos in expandablePositions)
+        {
+            var gridExpansionBox = Instantiate(GridExpansionBoxPrefab, GridParentObj.transform).GetComponent<GridExpansionBoxObj>();
+            gridExpansionBox.Setup(pos);
+
+            gridExpansionBoxObjList.Add(gridExpansionBox);
+        }
+    }
+
+    public void ExpandGrid(Position pos)
+    {
+        gridPos.Add(pos);
+        CreateGridObj(pos);
+
+        isGridExpansionMode = false;
+    }
+
+    public void ExpandGrid(GridExpansionBoxObj gridExpandBoxObj)
+    {
+        gridPos.Add(gridExpandBoxObj.pos);
+        CreateGridObj(gridExpandBoxObj.pos);
+
+        // remove all grid expansion box
+        foreach (var gridExpandBox in gridExpansionBoxObjList)
+        {
+            Destroy(gridExpandBox.gameObject);
+        }
+
+        isGridExpansionMode = false;
+    }
 
     #endregion
 

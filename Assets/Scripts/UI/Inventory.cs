@@ -45,13 +45,13 @@ public class Inventory : MonoBehaviour
         itemObj.gameObject.SetActive(true);
 
         // make some cell randomly blacked
-        itemObj.cells.ForEach(cell =>
+        foreach (var cell in itemObj.cellSet.Values)
         {
             if (UnityEngine.Random.Range(0, 3) == 0)
             {
                 cell.SetColor(Color.black);
             }
-        });
+        }
 
         // AddItemInventory(itemObj);
         GenerateItemAtInventory(itemObj);
@@ -100,7 +100,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public List<ItemObj> storedItems = new List<ItemObj>();
+    public List<ItemObj> storedItemList = new List<ItemObj>();
 
     public Vector3 inventoryItemScale;
 
@@ -126,9 +126,9 @@ public class Inventory : MonoBehaviour
         {
             index = 0;
         }
-        else if (index > storedItems.Count)
+        else if (index > storedItemList.Count)
         {
-            index = storedItems.Count;
+            index = storedItemList.Count;
         }
 
 
@@ -140,7 +140,7 @@ public class Inventory : MonoBehaviour
         // Get Index from mouseposition y
         var index = GetInsertIndexFromMousePosition();
         // Debug.Log(index);
-        storedItems.Insert(index, itemObj);
+        storedItemList.Insert(index, itemObj);
         
         // Add item to list
         itemObj.transform.SetParent(Content.transform, false);
@@ -155,18 +155,18 @@ public class Inventory : MonoBehaviour
 
     public void RemoveItemInventory(ItemObj itemObj)
     {
-        if (!storedItems.Contains(itemObj))
+        if (!storedItemList.Contains(itemObj))
         {
-            Debug.Log("Item is not in grid");
+            // Debug.Log("Item is not in grid");
             return;
         }
 
-        storedItems.Remove(itemObj);
+        storedItemList.Remove(itemObj);
     }
 
     public void GenerateItemAtInventory(ItemObj itemObj)
     {
-        storedItems.Add(itemObj);
+        storedItemList.Add(itemObj);
         
         // Add item to list at last
         itemObj.transform.SetParent(Content.transform, false);

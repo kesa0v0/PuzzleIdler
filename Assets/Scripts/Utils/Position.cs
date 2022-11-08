@@ -1,31 +1,7 @@
-using System.Collections;
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-
-[Serializable]
-public enum ItemLevel
-{
-    Red,
-    Orange,
-    Yellow,
-    Green,
-    Blue,
-    Purple
-}
-
-[Serializable]
-public struct ItemDefinition
-{
-    public string ID;
-    public string itemName;
-    public string description;
-    public List<Position> dimensions;
-
-    public float point;
-    public ItemLevel itemLevel;
-
-}
 
 [Serializable]
 public struct Position
@@ -37,6 +13,16 @@ public struct Position
     }
     public int x;
     public int y;
+    public List<Position> GetNeighbors()
+    {
+        return new List<Position>()
+        {
+            new Position(0 + this.x, 1 + this.y),
+            new Position(1 + this.x, 0 + this.y),
+            new Position(0 + this.x, -1 + this.y),
+            new Position(-1 + this.x, 0 + this.y)
+        };
+    }
     public static bool operator ==(Position a, Position b)
     {
         return a.x == b.x && a.y == b.y;
@@ -44,6 +30,11 @@ public struct Position
     public static bool operator !=(Position a, Position b)
     {
         return !(a == b);
+    }
+
+    public static Position operator +(Position a, Position b)
+    {
+        return new Position(a.x + b.x, a.y + b.y);
     }
 
     public override bool Equals(object obj)
@@ -56,8 +47,13 @@ public struct Position
         return base.GetHashCode();
     }
 
+    public Vector3 ToVector3()
+    {
+        return new Vector3(x, y, 0);
+    }
+
     public override string ToString()
     {
-        return base.ToString();
+        return "x: " + x + ", y: " + y;
     }
 }
