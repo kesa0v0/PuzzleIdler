@@ -157,7 +157,7 @@ public class Inventory : MonoBehaviour
     {
         if (!storedItemList.Contains(itemObj))
         {
-            Debug.Log("Item is not in grid");
+            // Debug.Log("Item is not in grid");
             return;
         }
 

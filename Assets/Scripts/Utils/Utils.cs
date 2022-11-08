@@ -7,7 +7,7 @@ public class Utils
 
     // Get Available Extension Position by DFS
     // TODO: get argument starting position, current: defaultly (0,0)
-    public static List<Position> GetAbleExtPos(List<Position> storedPosList)
+    public static List<Position> GetAbleExpansionPos(List<Position> storedPosList)
     {
         List<Position> visitedPos = new List<Position>();
         Stack<Position> stack = new Stack<Position>();

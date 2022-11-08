@@ -106,7 +106,7 @@ public sealed class GridManager : MonoBehaviour
             // Check All Cells in Grids
             if (!gridSet.Keys.Contains(cellRelGridPos))
             {
-                // Debug.Log("Out of Grid");
+                Debug.Log("Out of Grid");
                 return false;
             }
 
@@ -114,7 +114,7 @@ public sealed class GridManager : MonoBehaviour
             if (gridSet[cellRelGridPos].occupiedCell != null && !itemObj.cellSet.ContainsKey(gridSet[cellRelGridPos].occupiedCell.relPosOfItem))
             {
                 
-                // Debug.Log("Grid is already occupied");
+                Debug.Log("Grid is already occupied");
                 return false;
             }
             
@@ -145,7 +145,7 @@ public sealed class GridManager : MonoBehaviour
         // check if item is in grid
         if (!storedItemList.Contains(itemVisual))
         {
-            Debug.Log("Item is not in grid");
+            // Debug.Log("Item is not in grid");
             return;
         }
 
@@ -167,45 +167,57 @@ public sealed class GridManager : MonoBehaviour
 
     #endregion
 
-    [SerializeField] GameObject GridExtensionBoxPrefab;
+    [SerializeField] GameObject GridExpansionBoxPrefab;
 
 
-    #region  Grid Extension
+    #region Grid Expansion
 
-    private List<GridExtensionBoxObj> gridExtensionBoxObjList = new List<GridExtensionBoxObj>();
+    private List<GridExpansionBoxObj> gridExpansionBoxObjList = new List<GridExpansionBoxObj>();
+    [SerializeField] private bool isGridExpansionMode = false;
 
-    public void VisualizeExtendablePosition()
+    public void VisualizeExpandablePosition()
     {
-        var expandablePositions = Utils.GetAbleExtPos(gridPos);
+        if (isGridExpansionMode)
+        {
+            return;
+        }
 
-        gridExtensionBoxObjList = new List<GridExtensionBoxObj>();
+        isGridExpansionMode = true;
+
+        var expandablePositions = Utils.GetAbleExpansionPos(gridPos);
+
+        gridExpansionBoxObjList = new List<GridExpansionBoxObj>();
         
 
         foreach (var pos in expandablePositions)
         {
-            var gridExtBox = Instantiate(GridExtensionBoxPrefab, GridParentObj.transform).GetComponent<GridExtensionBoxObj>();
-            gridExtBox.Setup(pos);
+            var gridExpansionBox = Instantiate(GridExpansionBoxPrefab, GridParentObj.transform).GetComponent<GridExpansionBoxObj>();
+            gridExpansionBox.Setup(pos);
 
-            gridExtensionBoxObjList.Add(gridExtBox);
+            gridExpansionBoxObjList.Add(gridExpansionBox);
         }
     }
 
-    public void ExtendGrid(Position pos)
+    public void ExpandGrid(Position pos)
     {
         gridPos.Add(pos);
         CreateGridObj(pos);
+
+        isGridExpansionMode = false;
     }
 
-    public void ExtendGrid(GridExtensionBoxObj gridExtBoxObj)
+    public void ExpandGrid(GridExpansionBoxObj gridExpandBoxObj)
     {
-        gridPos.Add(gridExtBoxObj.pos);
-        CreateGridObj(gridExtBoxObj.pos);
+        gridPos.Add(gridExpandBoxObj.pos);
+        CreateGridObj(gridExpandBoxObj.pos);
 
-        // remove all grid extension box
-        foreach (var gridExtBox in gridExtensionBoxObjList)
+        // remove all grid expansion box
+        foreach (var gridExpandBox in gridExpansionBoxObjList)
         {
-            Destroy(gridExtBox.gameObject);
+            Destroy(gridExpandBox.gameObject);
         }
+
+        isGridExpansionMode = false;
     }
 
     #endregion

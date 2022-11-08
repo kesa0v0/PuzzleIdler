@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridExtensionBoxObj : MonoBehaviour
+public class GridExpansionBoxObj : MonoBehaviour
 {
     public Position pos;
     private bool isAlreadyClicked = false; // To prevent double click
@@ -20,7 +20,7 @@ public class GridExtensionBoxObj : MonoBehaviour
         {
             isAlreadyClicked = true;
             Debug.Log("Clicked: " + pos.ToString());
-            GridManager.Instance.ExtendGrid(this);
+            GridManager.Instance.ExpandGrid(this);
         }
     }
 }

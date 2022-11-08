@@ -157,7 +157,8 @@ MonoBehaviour:
   GridParentObj: {fileID: 721310880}
   gridPos: []
   storedItemList: []
-  GridExtensionBoxPrefab: {fileID: 3804162876199059362, guid: ee9aa8bf2a6953e4cb24df916b0dbfe9, type: 3}
+  GridExpansionBoxPrefab: {fileID: 3804162876199059362, guid: ee9aa8bf2a6953e4cb24df916b0dbfe9, type: 3}
+  isGridExpansionMode: 0
 --- !u!4 &53934034
 Transform:
   m_ObjectHideFlags: 0
@@ -1341,7 +1342,7 @@ GameObject:
   - component: {fileID: 1078700123}
   - component: {fileID: 1078700122}
   m_Layer: 5
-  m_Name: Btn_VisualizeExtendableGrid
+  m_Name: Btn_VisualizeExpandableGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1414,7 +1415,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 53934033}
         m_TargetAssemblyTypeName: GridManager, Assembly-CSharp
-        m_MethodName: VisualizeExtendablePosition
+        m_MethodName: VisualizeExpandablePosition
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
