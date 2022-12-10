@@ -28,11 +28,11 @@ public class CameraManager : MonoBehaviour
         // Pan Camera with arrow keys
         if (Input.GetKey("w") || Input.GetKey(KeyCode.UpArrow))
         {
-            pos += transform.forward * panSpeed * Time.deltaTime;
+            pos += transform.up * panSpeed * Time.deltaTime;
         }
         if (Input.GetKey("s") || Input.GetKey(KeyCode.DownArrow))
         {
-            pos -= transform.forward * panSpeed * Time.deltaTime;
+            pos -= transform.up * panSpeed * Time.deltaTime;
         }
         if (Input.GetKey("d") || Input.GetKey(KeyCode.RightArrow))
         {
